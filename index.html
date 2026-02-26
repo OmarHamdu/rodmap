@@ -4,446 +4,2445 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CodePath — خريطة طريق البرمجة الشاملة</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#020509;--s1:#07101f;--s2:#0c1a2e;--s3:#111f38;
-  --b1:rgba(255,255,255,0.05);--b2:rgba(255,255,255,0.09);--b3:rgba(255,255,255,0.14);
-  --cyan:#00f5d4;--blue:#38b6ff;--purple:#a259ff;--pink:#ff5fa0;
-  --orange:#ff8c42;--yellow:#ffd166;--green:#3ddc97;--red:#ff4d6d;
-  --t1:#e8f0fe;--t2:#8fa3b8;--t3:#3d5a73;
-  --r:16px;--rl:24px;--rxl:32px;
+/* ============================
+   DESIGN SYSTEM
+   ============================ */
+:root {
+  --bg: #020408;
+  --bg2: #050a12;
+  --surface: #080f1a;
+  --surface2: #0d1826;
+  --surface3: #112035;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --border3: rgba(255,255,255,0.16);
+
+  --cyan: #00f5d4;
+  --cyan-dim: rgba(0,245,212,0.12);
+  --cyan-glow: rgba(0,245,212,0.25);
+  --blue: #3b9eff;
+  --purple: #9d6fff;
+  --pink: #ff6bbd;
+  --orange: #ff9354;
+  --yellow: #ffd166;
+  --green: #3ddc97;
+  --red: #ff5c7c;
+
+  --text: #e8f0fe;
+  --text2: #8fa3b8;
+  --text3: #4a6274;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
 }
+
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;overflow-x:hidden}
-body{background:var(--bg);color:var(--t1);font-family:'Cairo',sans-serif;cursor:none;overflow-x:hidden}
 
-/* CURSOR */
-#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
-#cur2{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,245,212,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s,top .12s}
-body:hover #cur{opacity:1}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Cairo', sans-serif;
+  min-height: 100vh;
+  cursor: none;
+}
 
-/* BG */
-#bgc{position:fixed;inset:0;z-index:0}
-.bgrid{position:fixed;inset:0;z-index:1;
-  background-image:linear-gradient(rgba(0,245,212,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,212,.018) 1px,transparent 1px);
-  background-size:70px 70px;
-  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
-.orb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;animation:orbf 9s ease-in-out infinite}
-.o1{width:450px;height:450px;background:rgba(0,245,212,.045);top:-120px;right:-80px}
-.o2{width:380px;height:380px;background:rgba(162,89,255,.05);bottom:5%;left:-60px;animation-delay:-4s}
-.o3{width:280px;height:280px;background:rgba(56,182,255,.04);top:55%;left:48%;animation-delay:-7s}
-@keyframes orbf{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-35px) scale(1.07)}}
+/* Custom cursor */
+.cursor {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: screen;
+}
+.cursor-trail {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0,245,212,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease, top 0.15s ease;
+}
 
-/* PROGRESS */
-#pgbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));z-index:600;transition:width .1s;box-shadow:0 0 8px var(--cyan)}
+/* Animated BG */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.bg-canvas canvas {
+  width: 100%;
+  height: 100%;
+}
 
-/* NAV */
-nav{position:fixed;top:0;inset-inline:0;z-index:500;height:64px;
-  background:rgba(2,5,9,.88);backdrop-filter:blur(22px) saturate(180%);
-  border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
-.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nlogo{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:#000;
-  font-family:'Fira Code',monospace;box-shadow:0 0 18px rgba(0,245,212,.3)}
-.nname{font-family:'Fira Code',monospace;font-size:1.05rem;color:var(--cyan);letter-spacing:.5px}
-.npills{display:flex;gap:3px;background:var(--s2);border:1px solid var(--b1);border-radius:50px;padding:4px}
-.npill{padding:6px 15px;border-radius:50px;font-size:.78rem;color:var(--t3);cursor:pointer;transition:all .2s;border:none;background:none;font-family:'Cairo',sans-serif;text-decoration:none;display:inline-flex}
-.npill:hover{color:var(--t1)}
-.npill.act{background:var(--s3);color:var(--cyan);border:1px solid rgba(0,245,212,.2)}
-.nbtn{padding:8px 20px;border-radius:50px;font-size:.8rem;cursor:pointer;font-family:'Cairo',sans-serif;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;font-weight:700;border:none;
-  box-shadow:0 4px 18px rgba(0,245,212,.28);transition:all .25s}
-.nbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,245,212,.4)}
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image:
+    linear-gradient(rgba(0,245,212,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,212,0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
 
-/* HERO */
-.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 24px 60px;overflow:hidden}
-.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,245,212,.06);border:1px solid rgba(0,245,212,.2);border-radius:50px;padding:7px 20px;font-size:.78rem;color:var(--cyan);margin-bottom:32px;font-family:'Fira Code',monospace;animation:fadeUp .6s ease backwards}
-.hbadge::before{content:'';width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,245,212,.6)}50%{opacity:.5;box-shadow:0 0 0 7px rgba(0,245,212,0)}}
-.hpre{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;animation:fadeUp .6s .08s ease backwards}
-h1.htitle{font-family:'Tajawal',sans-serif;font-size:clamp(2.8rem,8vw,6.5rem);font-weight:900;line-height:1.05;margin-bottom:24px;animation:fadeUp .7s .12s ease backwards}
-.hl1{display:block;color:#fff}
-.hl2{display:block;background:linear-gradient(90deg,var(--cyan),var(--blue) 40%,var(--purple) 75%,var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gmove 4s linear infinite}
-@keyframes gmove{0%{background-position:0%}100%{background-position:200%}}
-.hdesc{font-size:1.1rem;color:var(--t2);max-width:660px;line-height:1.95;margin-bottom:42px;animation:fadeUp .7s .2s ease backwards}
-.hctarow{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;animation:fadeUp .7s .28s ease backwards}
-.cta1{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;border:none;padding:14px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 28px rgba(0,245,212,.3);transition:all .3s}
-.cta1:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(0,245,212,.45)}
-.cta2{background:var(--s2);border:1px solid var(--b2);color:var(--t2);padding:14px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s}
-.cta2:hover{border-color:var(--purple);color:var(--purple)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+/* ============================
+   NAV
+   ============================ */
+nav {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: 500;
+  height: 66px;
+  background: rgba(2,4,8,0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
 
-/* STATS ROW */
-.hstats{display:flex;border:1px solid var(--b1);border-radius:var(--rl);background:var(--s1);overflow:hidden;max-width:800px;width:100%;animation:fadeUp .7s .36s ease backwards}
-.hstat{flex:1;padding:22px 16px;text-align:center;position:relative}
-.hstat+.hstat::before{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:var(--b1)}
-.snum{font-family:'Tajawal',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;line-height:1}
-.slbl{font-size:.72rem;color:var(--t3);margin-top:5px}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-logo-mark {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #000;
+  font-family: 'Fira Code', monospace;
+  box-shadow: 0 0 20px rgba(0,245,212,0.3);
+}
+.nav-name {
+  font-family: 'Fira Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
 
-/* SCROLL IND */
-.sind{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--t3);font-size:.68rem;letter-spacing:2px;text-transform:uppercase;font-family:'Fira Code',monospace;animation:float 2s ease-in-out infinite}
-.swheel{width:20px;height:34px;border:1px solid var(--t3);border-radius:10px;position:relative}
-.swheel::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:7px;background:var(--cyan);border-radius:2px;animation:sdot 2s ease-in-out infinite}
-@keyframes sdot{0%,100%{top:5px;opacity:1}50%{top:18px;opacity:0}}
-@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+.nav-center {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 4px;
+}
+.nav-pill {
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  font-family: 'Cairo', sans-serif;
+  white-space: nowrap;
+}
+.nav-pill:hover { color: var(--text); }
+.nav-pill.active { background: var(--surface3); color: var(--cyan); border: 1px solid rgba(0,245,212,0.2); }
 
-/* CATEGORY CARDS (MAIN) */
-.main{position:relative;z-index:10;max-width:1500px;margin:0 auto;padding:0 24px 120px}
-.sec{margin-top:70px;margin-bottom:32px;display:flex;align-items:center;gap:14px}
-.secbar{width:3px;height:30px;border-radius:2px;flex-shrink:0}
-.sectitle{font-family:'Tajawal',sans-serif;font-size:1.55rem;font-weight:800}
-.secsub{font-size:.75rem;color:var(--t3);margin-top:3px}
+.nav-actions { display: flex; gap: 10px; align-items: center; }
+.nav-btn {
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  transition: all 0.25s;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2);
+}
+.nav-btn:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+.nav-btn.primary {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  border: none;
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0,245,212,0.3);
+}
+.nav-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(0,245,212,0.4); }
 
-.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+/* Progress bar */
+.progress-bar-top {
+  position: fixed;
+  top: 66px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+  z-index: 499;
+  transition: width 0.1s;
+  box-shadow: 0 0 8px var(--cyan);
+}
 
-.catcard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;cursor:pointer;text-decoration:none;display:block;color:inherit;transition:transform .35s cubic-bezier(.25,.46,.45,.94),border-color .3s,box-shadow .3s;animation:cardIn .5s ease backwards}
-@keyframes cardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.catcard:hover{transform:translateY(-8px) scale(1.01);border-color:var(--cc);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px var(--cg)}
-.cstripe{height:3px;background:linear-gradient(90deg,var(--cc),transparent)}
-.cchead{padding:24px 22px 16px;display:flex;gap:14px}
-.ccico{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;background:var(--cibg);border:1px solid var(--cib)}
-.cctitle{font-family:'Tajawal',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:4px;color:#fff}
-.ccsub{font-size:.75rem;color:var(--t3);line-height:1.5}
-.ccdesc{padding:0 22px 16px;font-size:.82rem;color:var(--t2);line-height:1.75}
-.ccchips{padding:0 22px 16px;display:flex;flex-wrap:wrap;gap:6px}
-.cchip{font-size:.65rem;padding:3px 10px;border-radius:6px;background:var(--s3);border:1px solid var(--b1);color:var(--t2);font-family:'Fira Code',monospace}
-.ccbot{padding:14px 22px;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
-.ccmeta{font-size:.72rem;color:var(--t3);display:flex;align-items:center;gap:6px}
-.ccdot{width:4px;height:4px;border-radius:50%;background:var(--cc)}
-.ccgo{font-size:.75rem;color:var(--cc);opacity:0;transform:translateX(8px);transition:all .25s}
-.catcard:hover .ccgo{opacity:1;transform:translateX(0)}
-.dbadge{font-size:.62rem;padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace}
-.dhot{background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);color:var(--red)}
-.dhigh{background:rgba(61,220,151,.1);border:1px solid rgba(61,220,151,.25);color:var(--green)}
-.drising{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.25);color:var(--orange)}
+/* ============================
+   HERO
+   ============================ */
+.hero {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  overflow: hidden;
+}
 
-/* QUIZ TEASER */
-.qteaser{background:linear-gradient(135deg,rgba(0,245,212,.04),rgba(162,89,255,.04));border:1px solid rgba(0,245,212,.14);border-radius:var(--rxl);padding:44px;text-align:center;position:relative;overflow:hidden;margin-bottom:0}
-.qteaser::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(0,245,212,.06) 0%,transparent 70%);pointer-events:none}
-.qticon{font-size:3rem;display:block;margin-bottom:16px}
-.qttitle{font-family:'Tajawal',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:10px}
-.qtdesc{font-size:.9rem;color:var(--t2);margin-bottom:28px;max-width:550px;margin-left:auto;margin-right:auto}
-.qtbtn{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;padding:13px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 22px rgba(0,245,212,.28);text-decoration:none;display:inline-block}
-.qtbtn:hover{transform:translateY(-2px);box-shadow:0 7px 30px rgba(0,245,212,.4)}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,245,212,0.06);
+  border: 1px solid rgba(0,245,212,0.2);
+  border-radius: 50px;
+  padding: 7px 20px;
+  font-size: 0.8rem;
+  color: var(--cyan);
+  margin-bottom: 36px;
+  font-family: 'Fira Code', monospace;
+  letter-spacing: 0.5px;
+  animation: fadeUp 0.6s ease backwards;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
 
-/* COMPARE TABLE */
-.ctable{width:100%;border-collapse:collapse;min-width:750px}
-.ctable th{background:var(--s2);padding:14px 18px;font-size:.78rem;font-weight:700;color:var(--t2);text-align:right;border-bottom:1px solid var(--b2)}
-.ctable td{padding:13px 18px;font-size:.8rem;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
-.ctable tr:hover td{background:var(--s2)}
-.ctname{font-weight:700;color:#fff;font-size:.85rem}
-.ctsec{font-size:.7rem;padding:3px 10px;border-radius:10px;font-family:'Fira Code',monospace}
-.ce{background:rgba(61,220,151,.1);color:var(--green);border:1px solid rgba(61,220,151,.2)}
-.cm{background:rgba(255,209,102,.1);color:var(--yellow);border:1px solid rgba(255,209,102,.2)}
-.ch{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.2)}
-.ctsal{color:var(--green);font-family:'Fira Code',monospace;font-weight:700;font-size:.76rem}
-.ctdur{color:var(--cyan);font-family:'Fira Code',monospace;font-size:.76rem}
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,245,212,0.5)} 50%{opacity:0.6;box-shadow:0 0 0 6px rgba(0,245,212,0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-/* RESOURCE CARDS */
-.resgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
-.rescard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);padding:20px;display:flex;gap:14px;cursor:pointer;transition:all .3s}
-.rescard:hover{transform:translateY(-4px);border-color:var(--b2);box-shadow:0 12px 35px rgba(0,0,0,.4)}
-.resico{font-size:1.9rem;flex-shrink:0}
-.restype{font-size:.62rem;color:var(--cyan);font-family:'Fira Code',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
-.resname{font-size:.88rem;font-weight:700;margin-bottom:3px}
-.resdesc{font-size:.74rem;color:var(--t2);line-height:1.6}
+.hero-pretitle {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: var(--text3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  animation: fadeUp 0.6s 0.1s ease backwards;
+}
 
-/* TIMELINE */
-.tlwrap{display:grid;grid-template-columns:1fr 56px 1fr;gap:0}
-.tlr{text-align:left;padding:0 28px 36px 0}
-.tll{padding:0 0 36px 28px}
-.tlce{display:flex;flex-direction:column;align-items:center;padding-bottom:36px}
-.tlline{flex:1;width:2px;background:linear-gradient(to bottom,var(--cyan),var(--purple));opacity:.3}
-.tlnode{width:40px;height:40px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:0 0 18px rgba(0,245,212,.3);flex-shrink:0;z-index:1}
-.tlcard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px 22px;transition:all .3s}
-.tlcard:hover{border-color:var(--b2);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.3)}
-.tlphase{font-size:.65rem;color:var(--cyan);font-family:'Fira Code',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
-.tltitle{font-family:'Tajawal',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:7px}
-.tldesc{font-size:.8rem;color:var(--t2);line-height:1.8;margin-bottom:10px}
-.tltags{display:flex;flex-wrap:wrap;gap:5px}
-.tltag{font-size:.65rem;background:rgba(0,245,212,.08);border:1px solid rgba(0,245,212,.14);color:var(--cyan);padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace}
-.tlemp{padding-bottom:36px}
+h1.hero-h1 {
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 28px;
+  animation: fadeUp 0.7s 0.15s ease backwards;
+}
+.h1-line1 {
+  display: block;
+  color: #fff;
+}
+.h1-line2 {
+  display: block;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--blue) 40%, var(--purple) 80%, var(--pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200%;
+  animation: fadeUp 0.7s 0.15s ease backwards, gradMove 4s linear infinite;
+}
+@keyframes gradMove { 0%{background-position:0%} 100%{background-position:200%} }
 
-/* FOOTER */
-footer{position:relative;z-index:10;border-top:1px solid var(--b1);padding:50px 32px 40px;text-align:center;background:var(--s1)}
-.flogo{font-family:'Fira Code',monospace;font-size:1.2rem;color:var(--cyan);margin-bottom:8px}
-.fdev{font-size:.82rem;color:var(--t2);margin-bottom:4px}
-.fcopy{font-size:.72rem;color:var(--t3);margin-bottom:22px}
-.flinks{display:flex;justify-content:center;gap:22px;flex-wrap:wrap}
-.flink{font-size:.76rem;color:var(--t2);cursor:pointer;transition:color .2s;text-decoration:none}
-.flink:hover{color:var(--cyan)}
+.hero-desc {
+  font-size: 1.15rem;
+  color: var(--text2);
+  max-width: 680px;
+  line-height: 1.9;
+  margin-bottom: 44px;
+  animation: fadeUp 0.7s 0.25s ease backwards;
+}
 
-/* BTT */
-.btt{position:fixed;bottom:26px;left:26px;width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 18px rgba(0,245,212,.4);transition:all .3s;opacity:0;pointer-events:none}
-.btt.vis{opacity:1;pointer-events:all}
-.btt:hover{transform:translateY(-3px)}
+.hero-cta-row {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 70px;
+  animation: fadeUp 0.7s 0.3s ease backwards;
+}
+.cta-main {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #000;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 30px rgba(0,245,212,0.3);
+  position: relative;
+  overflow: hidden;
+}
+.cta-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.cta-main:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,245,212,0.4); }
+.cta-main:hover::after { opacity: 1; }
 
-@media(max-width:900px){
-  .npills{display:none}
-  .catgrid{grid-template-columns:1fr}
-  .tlwrap{grid-template-columns:40px 1fr}
-  .tlr{display:none}
-  .tll{grid-column:2}
-  .tlemp{display:none}
-  body{cursor:auto}
-  #cur,#cur2{display:none}
-  .hstats{flex-wrap:wrap}
+.cta-sec {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.cta-sec:hover { border-color: var(--purple); color: var(--purple); background: rgba(157,111,255,0.08); }
+
+/* Stats */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+  animation: fadeUp 0.7s 0.4s ease backwards;
+  max-width: 760px;
+  width: 100%;
+}
+.hero-stat {
+  flex: 1;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+}
+.hero-stat + .hero-stat::before {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: var(--border);
+}
+.stat-big {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-lbl { font-size: 0.78rem; color: var(--text3); }
+
+/* Scroll indicator */
+.scroll-ind {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text3);
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Fira Code', monospace;
+  animation: float 2s ease-in-out infinite;
+}
+.scroll-wheel {
+  width: 22px; height: 38px;
+  border: 1px solid var(--text3);
+  border-radius: 11px;
+  position: relative;
+}
+.scroll-wheel::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px; height: 8px;
+  background: var(--cyan);
+  border-radius: 2px;
+  animation: scroll-dot 2s ease-in-out infinite;
+}
+@keyframes scroll-dot { 0%,100%{top:6px;opacity:1} 50%{top:20px;opacity:0} }
+@keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-6px)} }
+
+/* ============================
+   QUIZ / RECOMMENDER
+   ============================ */
+.quiz-section {
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+}
+
+.quiz-card {
+  background: linear-gradient(135deg, rgba(0,245,212,0.04), rgba(157,111,255,0.04));
+  border: 1px solid rgba(0,245,212,0.15);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.quiz-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0,245,212,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.quiz-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+.quiz-title { font-family: 'Tajawal', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 10px; }
+.quiz-desc { font-size: 0.9rem; color: var(--text2); margin-bottom: 28px; }
+
+.quiz-q { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; display: none; }
+.quiz-q.show { display: block; }
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto 24px;
+  display: none;
+}
+.quiz-options.show { display: grid; }
+
+.quiz-opt {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: center;
+}
+.quiz-opt:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); transform: translateY(-2px); }
+.quiz-opt.selected { border-color: var(--cyan); background: var(--cyan-dim); color: var(--cyan); }
+
+.quiz-result {
+  display: none;
+  padding: 20px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  border: 1px solid rgba(0,245,212,0.2);
+  text-align: center;
+}
+.quiz-result.show { display: block; }
+.quiz-result h3 { font-family: 'Tajawal', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--cyan); }
+
+.quiz-start-btn, .quiz-next-btn {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #000;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.quiz-start-btn:hover, .quiz-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,245,212,0.3); }
+
+/* ============================
+   MAIN CONTENT
+   ============================ */
+.main-wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+/* Section headers */
+.sec-head {
+  margin-bottom: 32px;
+  margin-top: 80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sec-title-wrap { display: flex; align-items: center; gap: 14px; }
+.sec-bar { width: 3px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.sec-title {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+.sec-subtitle { font-size: 0.82rem; color: var(--text3); margin-top: 3px; }
+.sec-badge {
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-family: 'Fira Code', monospace;
+  white-space: nowrap;
+}
+
+/* ============================
+   CARDS
+   ============================ */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 18px;
+}
+
+.track-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(.25,.46,.45,.94), border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  animation: cardIn 0.5s ease backwards;
+}
+
+@keyframes cardIn { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+.track-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--card-color1, transparent), var(--card-color2, transparent));
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+.track-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: var(--c);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px var(--c-glow, rgba(0,245,212,0.1));
+}
+.track-card:hover::before { opacity: 1; }
+
+/* Card top stripe */
+.card-stripe {
+  height: 3px;
+  background: linear-gradient(90deg, var(--c), transparent);
+}
+
+.card-inner { position: relative; z-index: 1; }
+
+.card-top {
+  padding: 22px 22px 16px;
+  display: flex;
+  gap: 14px;
+}
+.card-emoji {
+  width: 54px; height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  position: relative;
+}
+.card-emoji::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 18px;
+  background: radial-gradient(circle, var(--c-glow, transparent) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.track-card:hover .card-emoji::after { opacity: 1; }
+
+.card-title { font-family: 'Tajawal', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: #fff; }
+.card-sub { font-size: 0.75rem; color: var(--text3); line-height: 1.5; }
+
+.card-chips {
+  padding: 0 22px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'Fira Code', monospace;
+  transition: all 0.2s;
+}
+.track-card:hover .chip { border-color: var(--c-border); }
+
+.card-bottom {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-meta { font-size: 0.72rem; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+.card-meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--c); }
+.card-goto {
+  font-size: 0.75rem;
+  color: var(--c);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all 0.25s;
+}
+.track-card:hover .card-goto { opacity: 1; transform: translateX(0); }
+
+/* Demand badge */
+.demand-badge {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: 'Fira Code', monospace;
+  flex-shrink: 0;
+}
+.demand-hot { background: rgba(255,92,124,0.12); border: 1px solid rgba(255,92,124,0.3); color: var(--red); }
+.demand-high { background: rgba(61,220,151,0.1); border: 1px solid rgba(61,220,151,0.25); color: var(--green); }
+.demand-rising { background: rgba(255,147,84,0.1); border: 1px solid rgba(255,147,84,0.25); color: var(--orange); }
+
+/* ============================
+   MODAL — MASTERPIECE
+   ============================ */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(16px) saturate(160%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-bg.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-xl);
+  max-width: 980px;
+  width: 100%;
+  margin: auto;
+  overflow: hidden;
+  animation: modalIn 0.4s cubic-bezier(.25,.46,.45,.94);
+  position: relative;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.88) translateY(30px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+/* Modal hero bar */
+.modal-hero {
+  position: relative;
+  padding: 32px 36px 28px;
+  overflow: hidden;
+}
+.modal-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--m-gradient);
+  opacity: 0.08;
+}
+.modal-hero-content { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 20px; }
+.modal-big-icon {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  flex-shrink: 0;
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  box-shadow: 0 0 30px var(--m-glow);
+}
+.modal-hero-text { flex: 1; }
+.modal-pretitle { font-family: 'Fira Code', monospace; font-size: 0.72rem; color: var(--m-color); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.modal-title { font-family: 'Tajawal', sans-serif; font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+.modal-tagline { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+.modal-close {
+  position: absolute;
+  top: 24px; left: 24px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  z-index: 2;
+}
+.modal-close:hover { background: var(--red); border-color: var(--red); color: #fff; transform: rotate(90deg); }
+
+/* Quick stats in modal */
+.modal-quick-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.mqs-item {
+  flex: 1;
+  padding: 14px 16px;
+  text-align: center;
+  position: relative;
+}
+.mqs-item + .mqs-item::before { content:''; position:absolute; right:0; top:20%; bottom:20%; width:1px; background:var(--border); }
+.mqs-val { font-family: 'Tajawal', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--m-color, var(--cyan)); display: block; }
+.mqs-key { font-size: 0.68rem; color: var(--text3); font-family: 'Fira Code', monospace; }
+
+/* Modal tabs */
+.modal-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  padding: 0 4px;
+  scrollbar-width: none;
+}
+.modal-tabs::-webkit-scrollbar { display: none; }
+.mtab {
+  padding: 14px 22px;
+  font-size: 0.82rem;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.mtab:hover { color: var(--text); }
+.mtab.on { color: var(--m-color, var(--cyan)); border-bottom-color: var(--m-color, var(--cyan)); }
+
+/* Modal body */
+.modal-body { padding: 28px 32px 36px; max-height: 60vh; overflow-y: auto; }
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-track { background: var(--surface2); }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ---- ROADMAP tab ---- */
+.roadmap-container { position: relative; }
+.rm-track {
+  position: absolute;
+  right: 20px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--m-color, var(--cyan)), transparent);
+  opacity: 0.3;
+}
+.rm-item {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding-right: 52px;
+  position: relative;
+  animation: fadeUp 0.4s ease backwards;
+}
+.rm-dot {
+  position: absolute;
+  right: 11px; top: 12px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--m-color, var(--cyan));
+  box-shadow: 0 0 12px var(--m-glow, rgba(0,245,212,0.3));
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.rm-item:hover .rm-dot { background: var(--m-color, var(--cyan)); transform: scale(1.2); }
+
+.rm-box {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border-right: 3px solid var(--m-color, var(--cyan));
+  transition: all 0.25s;
+}
+.rm-item:hover .rm-box { border-color: var(--m-color, var(--cyan)); transform: translateX(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+
+.rm-phase { font-size: 0.65rem; color: var(--m-color, var(--cyan)); font-family: 'Fira Code', monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.8; }
+.rm-name { font-family: 'Tajawal', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+.rm-desc { font-size: 0.83rem; color: var(--text2); line-height: 1.8; margin-bottom: 12px; }
+.rm-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.rm-pill {
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(157,111,255,0.1);
+  border: 1px solid rgba(157,111,255,0.2);
+  color: var(--purple);
+  font-family: 'Fira Code', monospace;
+}
+.rm-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.rm-link {
+  font-size: 0.65rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0,245,212,0.15);
+  color: var(--cyan);
+}
+.rm-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: var(--yellow);
+  font-family: 'Fira Code', monospace;
+  float: left;
+}
+
+/* ---- SKILLS tab ---- */
+.skills-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.skill-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s;
+}
+.skill-box:hover { border-color: var(--border2); transform: translateY(-2px); }
+.skill-icon { font-size: 1.5rem; flex-shrink: 0; }
+.skill-info { flex: 1; min-width: 0; }
+.skill-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.skill-bar { height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+.skill-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--m-color, var(--cyan)), var(--purple)); transition: width 1s ease; }
+.skill-pct { font-size: 0.65rem; color: var(--text3); font-family: 'Fira Code', monospace; margin-top: 4px; }
+
+/* ---- SALARY tab ---- */
+.salary-chart-wrap { margin-bottom: 24px; }
+.salary-bar-item { margin-bottom: 16px; }
+.salary-bar-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.salary-role { font-size: 0.88rem; font-weight: 600; }
+.salary-range { font-size: 0.78rem; color: var(--green); font-family: 'Fira Code', monospace; }
+.salary-track { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.salary-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--m-color, var(--cyan)), var(--green)); transition: width 1.2s ease; }
+.salary-note { font-size: 0.78rem; color: var(--text3); background: var(--surface2); border-radius: var(--radius); padding: 14px 16px; border: 1px solid var(--border); }
+
+/* ---- RESOURCES tab ---- */
+.res-grid { display: flex; flex-direction: column; gap: 10px; }
+.res-row {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  transition: all 0.25s;
+}
+.res-row:hover { border-color: var(--border2); transform: translateX(-3px); }
+.res-emo { font-size: 1.8rem; flex-shrink: 0; }
+.res-info { flex: 1; }
+.res-type { font-size: 0.62rem; color: var(--m-color, var(--cyan)); font-family: 'Fira Code', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.res-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
+.res-desc { font-size: 0.77rem; color: var(--text2); }
+.res-badge {
+  font-size: 0.62rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-family: 'Fira Code', monospace;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.rb-free { background: rgba(61,220,151,0.1); border: 1px solid rgba(61,220,151,0.2); color: var(--green); }
+.rb-paid { background: rgba(255,209,102,0.1); border: 1px solid rgba(255,209,102,0.2); color: var(--yellow); }
+.rb-ar { background: rgba(59,158,255,0.1); border: 1px solid rgba(59,158,255,0.2); color: var(--blue); }
+
+/* ---- CERTS tab ---- */
+.certs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.cert-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  gap: 14px;
+  transition: all 0.25s;
+}
+.cert-box:hover { border-color: rgba(255,209,102,0.3); transform: translateY(-3px); }
+.cert-emo {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.cert-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
+.cert-org { font-size: 0.75rem; color: var(--text3); margin-bottom: 8px; }
+.cert-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.ctag {
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.15);
+  color: var(--yellow);
+}
+
+/* ---- PROJECTS tab ---- */
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.proj-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: all 0.25s;
+}
+.proj-box:hover { transform: translateY(-3px); border-color: var(--border2); }
+.proj-level {
+  font-size: 0.62rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'Fira Code', monospace;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.pl-1 { background: rgba(61,220,151,0.1); color: var(--green); border: 1px solid rgba(61,220,151,0.2); }
+.pl-2 { background: rgba(255,209,102,0.1); color: var(--yellow); border: 1px solid rgba(255,209,102,0.2); }
+.pl-3 { background: rgba(255,92,124,0.1); color: var(--red); border: 1px solid rgba(255,92,124,0.2); }
+.proj-name { font-size: 0.92rem; font-weight: 700; margin-bottom: 6px; }
+.proj-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+.proj-stack { display: flex; flex-wrap: wrap; gap: 5px; }
+.pstack {
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-family: 'Fira Code', monospace;
+}
+
+/* ============================
+   COMPARISON TABLE
+   ============================ */
+.compare-section {
+  margin-top: 80px;
+  overflow-x: auto;
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+.compare-table th {
+  background: var(--surface2);
+  padding: 16px 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text2);
+  text-align: right;
+  border-bottom: 1px solid var(--border2);
+  font-family: 'Cairo', sans-serif;
+}
+.compare-table td {
+  padding: 14px 20px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: middle;
+}
+.compare-table tr:hover td { background: var(--surface2); }
+.ct-name { font-weight: 700; color: #fff; font-size: 0.88rem; }
+.ct-diff {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-family: 'Fira Code', monospace;
+}
+.diff-easy { background: rgba(61,220,151,0.1); color: var(--green); border: 1px solid rgba(61,220,151,0.2); }
+.diff-med { background: rgba(255,209,102,0.1); color: var(--yellow); border: 1px solid rgba(255,209,102,0.2); }
+.diff-hard { background: rgba(255,92,124,0.1); color: var(--red); border: 1px solid rgba(255,92,124,0.2); }
+.ct-sal { color: var(--green); font-family: 'Fira Code', monospace; font-weight: 700; font-size: 0.78rem; }
+.ct-dur { color: var(--cyan); font-family: 'Fira Code', monospace; font-size: 0.78rem; }
+.ct-demand .demand-badge { font-size: 0.65rem; }
+.ct-trend { font-size: 1rem; }
+
+/* ============================
+   LEARNING PATH BUILDER
+   ============================ */
+.path-section { margin-top: 80px; }
+.path-builder {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+}
+.path-title { font-family: 'Tajawal', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+.path-desc { font-size: 0.85rem; color: var(--text2); margin-bottom: 28px; }
+.path-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.path-step {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+.path-step.selected { border-color: var(--cyan); background: var(--cyan-dim); }
+.path-step:hover:not(.selected) { border-color: var(--border2); transform: translateY(-3px); }
+.ps-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-family: 'Fira Code', monospace;
+  margin: 0 auto 10px;
+  border: 1px solid var(--border);
+}
+.path-step.selected .ps-num { background: var(--cyan); color: #000; border-color: var(--cyan); }
+.ps-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.ps-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+.ps-time { font-size: 0.7rem; color: var(--text3); font-family: 'Fira Code', monospace; }
+
+.path-result {
+  margin-top: 24px;
+  background: linear-gradient(135deg, rgba(0,245,212,0.04), rgba(157,111,255,0.04));
+  border: 1px solid rgba(0,245,212,0.15);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: none;
+}
+.path-result.show { display: block; }
+.pr-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 12px; color: var(--cyan); }
+.pr-items { display: flex; gap: 10px; flex-wrap: wrap; }
+.pr-item {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text2);
+}
+.pr-arrow { color: var(--text3); }
+
+/* ============================
+   MASTER TIMELINE
+   ============================ */
+.timeline-section { margin-top: 80px; }
+.tl-wrap {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+}
+.tl-item-right { text-align: left; padding: 0 30px 40px 0; }
+.tl-item-left { padding: 0 0 40px 30px; }
+.tl-empty { padding-bottom: 40px; }
+.tl-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40px;
+}
+.tl-line { flex: 1; width: 2px; background: linear-gradient(to bottom, var(--cyan), var(--purple)); opacity: 0.3; }
+.tl-node {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 0 20px rgba(0,245,212,0.3);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.tl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  transition: all 0.3s;
+}
+.tl-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+.tl-phase { font-size: 0.65rem; color: var(--cyan); font-family: 'Fira Code', monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.tl-title { font-family: 'Tajawal', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+.tl-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.8; margin-bottom: 10px; }
+.tl-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tltag {
+  font-size: 0.65rem;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0,245,212,0.15);
+  color: var(--cyan);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: 'Fira Code', monospace;
+}
+
+/* ============================
+   TOP RESOURCES SHOWCASE
+   ============================ */
+.resources-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.rc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.rc-card:hover { transform: translateY(-5px); border-color: var(--border2); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.rc-icon { font-size: 2rem; flex-shrink: 0; }
+.rc-type { font-size: 0.62rem; color: var(--cyan); font-family: 'Fira Code', monospace; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.rc-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.rc-desc { font-size: 0.75rem; color: var(--text2); line-height: 1.6; }
+
+/* ============================
+   FOOTER
+   ============================ */
+footer {
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid var(--border);
+  padding: 50px 32px;
+  text-align: center;
+  background: var(--surface);
+}
+.footer-logo { font-family: 'Fira Code', monospace; font-size: 1.3rem; color: var(--cyan); margin-bottom: 12px; }
+.footer-text { font-size: 0.8rem; color: var(--text3); margin-bottom: 16px; }
+.footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.footer-link { font-size: 0.78rem; color: var(--text2); cursor: pointer; transition: color 0.2s; }
+.footer-link:hover { color: var(--cyan); }
+
+/* ============================
+   BACK TO TOP & MISC
+   ============================ */
+.btt {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #000;
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 20px rgba(0,245,212,0.4);
+  transition: all 0.3s;
+  opacity: 0;
+  pointer-events: none;
+}
+.btt.visible { opacity: 1; pointer-events: all; }
+.btt:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,245,212,0.5); }
+
+/* Search */
+.search-section {
+  position: relative;
+  z-index: 10;
+  max-width: 700px;
+  margin: 0 auto 30px;
+  padding: 0 24px;
+}
+.search-box {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  padding: 15px 56px 15px 24px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  transition: all 0.3s;
+  direction: rtl;
+}
+.search-box:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+.search-box::placeholder { color: var(--text3); }
+.search-ico {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+/* Filter row */
+.filter-row {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px;
+  margin-bottom: 64px;
+}
+.filt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 7px 18px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.filt:hover { color: var(--text); border-color: var(--border2); }
+.filt.on { background: var(--cyan-dim); border-color: rgba(0,245,212,0.35); color: var(--cyan); }
+
+/* Hidden */
+.d-none { display: none !important; }
+
+@media(max-width:900px) {
+  .nav-center { display: none; }
+  .nav-actions .nav-btn:first-child { display: none; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .tl-wrap { grid-template-columns: 40px 1fr; }
+  .tl-item-right { display: none; }
+  .tl-item-left { grid-column: 2; }
+  .tl-empty { display: none; }
+  .hero-stats { flex-direction: column; }
+  .hero-stat + .hero-stat::before { display: none; }
+  body { cursor: auto; }
+  .cursor, .cursor-trail { display: none; }
+}
+
+@media(max-width:600px) {
+  .modal-body { padding: 20px; }
+  .modal-hero { padding: 24px 20px 20px; }
+  .modal-quick-stats { flex-wrap: wrap; }
+  .quiz-options { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<div id="cur"></div>
-<div id="cur2"></div>
-<canvas id="bgc" style="position:fixed;inset:0;z-index:0;width:100%;height:100%"></canvas>
-<div class="bgrid"></div>
-<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
-<div id="pgbar"></div>
 
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- BG -->
+<div class="bg-canvas"><canvas id="bgCanvas"></canvas></div>
+<div class="bg-grid"></div>
+
+<!-- Progress bar -->
+<div class="progress-bar-top" id="progressBar"></div>
+
+<!-- NAV -->
 <nav>
-  <a href="index.html" class="nbrand">
-    <div class="nlogo">&lt;/&gt;</div>
-    <span class="nname">CodePath</span>
-  </a>
-  <div class="npills">
-    <a href="quiz.html" class="npill">🧭 اختبار التخصص</a>
-    <a href="web.html" class="npill">🌐 الويب</a>
-    <a href="mobile.html" class="npill">📱 الموبايل</a>
-    <a href="ai.html" class="npill">🤖 الذكاء الاصطناعي</a>
-    <a href="data.html" class="npill">📊 البيانات</a>
-    <a href="security.html" class="npill">🔐 الأمن</a>
-    <a href="devops.html" class="npill">☁️ DevOps</a>
-    <a href="other.html" class="npill">🎯 أخرى</a>
+  <div class="nav-brand">
+    <div class="nav-logo-mark">&lt;/&gt;</div>
+    <span class="nav-name">CodePath</span>
   </div>
-  <button class="nbtn" onclick="window.location='quiz.html'">اكتشف مسارك</button>
+  <div class="nav-center" id="navCenter">
+    <button class="nav-pill active" onclick="scrollToId('tracks')">التخصصات</button>
+    <button class="nav-pill" onclick="scrollToId('compare')">المقارنة</button>
+    <button class="nav-pill" onclick="scrollToId('timeline')">المسار العام</button>
+    <button class="nav-pill" onclick="scrollToId('resources')">المصادر</button>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="scrollToId('quiz')">🧭 اكتشف مسارك</button>
+    <button class="nav-btn primary" onclick="scrollToId('tracks')">ابدأ الآن</button>
+  </div>
 </nav>
 
-<section class="hero">
-  <div class="hbadge">v2025 · تم التطوير بواسطة Eng. Omar Hamdi</div>
-  <p class="hpre">// من الصفر حتى الاحتراف</p>
-  <h1 class="htitle">
-    <span class="hl1">اختر مسارك</span>
-    <span class="hl2">وابنِ مستقبلك</span>
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-badge">v2025 · 25+ تخصص · خريطة شاملة</div>
+  <p class="hero-pretitle">// من الصفر حتى الاحتراف</p>
+  <h1 class="hero-h1">
+    <span class="h1-line1">اختر مسارك</span>
+    <span class="h1-line2">وابنِ مستقبلك</span>
   </h1>
-  <p class="hdesc">الدليل الأشمل لتعلم البرمجة والتكنولوجيا — روادماب تفصيلية لكل تخصص مع المهارات والمشاريع والشهادات وفرص العمل. طُوِّر بعناية واهتمام من قِبَل Eng. Omar Hamdi.</p>
-  <div class="hctarow">
-    <button class="cta1" onclick="window.location='quiz.html'">🧭 اكتشف تخصصك المثالي</button>
-    <button class="cta2" onclick="document.getElementById('cats').scrollIntoView({behavior:'smooth'})">استعرض التخصصات</button>
+  <p class="hero-desc">دليلك الأشمل لتعلم البرمجة والتكنولوجيا — روادماب تفصيلية لكل تخصص مع المهارات والمشاريع والشهادات وفرص العمل والراتب المتوقع</p>
+  <div class="hero-cta-row">
+    <button class="cta-main" onclick="scrollToId('quiz')">🧭 اكتشف تخصصك المثالي</button>
+    <button class="cta-sec" onclick="scrollToId('tracks')">استعرض جميع التخصصات</button>
   </div>
-  <div class="hstats">
-    <div class="hstat"><span class="snum" data-target="25">0</span><div class="slbl">تخصص برمجي</div></div>
-    <div class="hstat"><span class="snum" data-target="250" data-suffix="+">0</span><div class="slbl">موضوع تقني</div></div>
-    <div class="hstat"><span class="snum" data-target="120" data-suffix="+">0</span><div class="slbl">مصدر تعليمي</div></div>
-    <div class="hstat"><span class="snum" data-target="90" data-suffix="+">0</span><div class="slbl">مشروع عملي</div></div>
-    <div class="hstat"><span class="snum" data-target="60" data-suffix="+">0</span><div class="slbl">شهادة مهنية</div></div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="stat-big" id="c1">0</span><div class="stat-lbl">تخصص برمجي</div></div>
+    <div class="hero-stat"><span class="stat-big" id="c2">0</span><div class="stat-lbl">موضوع تقني</div></div>
+    <div class="hero-stat"><span class="stat-big" id="c3">0</span><div class="stat-lbl">مصدر تعليمي</div></div>
+    <div class="hero-stat"><span class="stat-big" id="c4">0</span><div class="stat-lbl">مشروع عملي</div></div>
+    <div class="hero-stat"><span class="stat-big" id="c5">0</span><div class="stat-lbl">شهادة مهنية</div></div>
   </div>
-  <div class="sind"><div class="swheel"></div><span>scroll</span></div>
+  <div class="scroll-ind">
+    <div class="scroll-wheel"></div>
+    <span>scroll</span>
+  </div>
 </section>
 
-<!-- QUIZ TEASER -->
-<div class="main" style="padding-bottom:0">
-  <div class="qteaser" id="quiz-teaser">
-    <span class="qticon">🧭</span>
-    <h2 class="qttitle">لا تعرف من أين تبدأ؟</h2>
-    <p class="qtdesc">أجب على 10 أسئلة شاملة وسيُحدد لك النظام التخصص الأنسب بناءً على شخصيتك واهتماماتك وأهدافك الوظيفية</p>
-    <a href="quiz.html" class="qtbtn">ابدأ اختبار التخصص ←</a>
+<!-- QUIZ -->
+<div id="quiz" class="quiz-section">
+  <div class="quiz-card">
+    <span class="quiz-icon">🧭</span>
+    <h2 class="quiz-title">اكتشف تخصصك المثالي</h2>
+    <p class="quiz-desc">أجب على 4 أسئلة سريعة وسنرشّحك للمسار الأنسب لك</p>
+    <div class="quiz-q" id="qText"></div>
+    <div class="quiz-options" id="qOpts"></div>
+    <div class="quiz-result" id="qResult"></div>
+    <button class="quiz-start-btn" id="qStart" onclick="startQuiz()">ابدأ الاختبار ←</button>
   </div>
 </div>
 
-<div class="main" id="cats">
+<!-- SEARCH -->
+<div class="search-section">
+  <input type="text" class="search-box" id="searchInput" placeholder="🔍  ابحث عن تخصص أو تقنية..." oninput="doSearch()">
+</div>
 
-  <!-- WEB -->
-  <div class="sec">
-    <div class="secbar" style="background:linear-gradient(to bottom,#38b6ff,#a259ff)"></div>
-    <div><div class="sectitle">🌐 تطوير الويب</div><div class="secsub">Frontend · Backend · Full Stack · APIs</div></div>
+<!-- FILTERS -->
+<div class="filter-row">
+  <button class="filt on" onclick="setFilter('all',this)">الكل</button>
+  <button class="filt" onclick="setFilter('web',this)">🌐 الويب</button>
+  <button class="filt" onclick="setFilter('mobile',this)">📱 الموبايل</button>
+  <button class="filt" onclick="setFilter('ai',this)">🤖 AI & ML</button>
+  <button class="filt" onclick="setFilter('data',this)">📊 البيانات</button>
+  <button class="filt" onclick="setFilter('security',this)">🔐 الأمن</button>
+  <button class="filt" onclick="setFilter('devops',this)">☁️ DevOps</button>
+  <button class="filt" onclick="setFilter('game',this)">🎮 الألعاب</button>
+  <button class="filt" onclick="setFilter('blockchain',this)">⛓️ Web3</button>
+  <button class="filt" onclick="setFilter('other',this)">✨ أخرى</button>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap" id="tracks">
+
+  <!-- WEB DEV -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#3b9eff,#9d6fff)"></div>
+      <div>
+        <h2 class="sec-title">🌐 تطوير الويب</h2>
+        <p class="sec-subtitle">Web Development · Frontend · Backend · Full Stack</p>
+      </div>
+    </div>
+    <span class="sec-badge" style="color:#3b9eff;border-color:rgba(59,158,255,0.3)">3 تخصصات</span>
   </div>
-  <div class="catgrid">
-    <a href="web.html" class="catcard" style="--cc:#38b6ff;--cg:rgba(56,182,255,.14);--cibg:rgba(56,182,255,.08);--cib:rgba(56,182,255,.2)" data-delay="0">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">🌐</div><div><div class="cctitle">تطوير الويب</div><div class="ccsub">Frontend · Backend · Full Stack</div></div></div>
-      <div class="ccdesc">من HTML بسيط حتى تطبيقات SaaS ضخمة — اكتشف 3 تخصصات متكاملة مع روادماب تفصيلية لكل منها</div>
-      <div class="ccchips"><span class="cchip">HTML5</span><span class="cchip">CSS3</span><span class="cchip">JavaScript</span><span class="cchip">React</span><span class="cchip">Node.js</span><span class="cchip">PostgreSQL</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 الأكثر طلباً</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="mobile.html" class="catcard" style="--cc:#ff8c42;--cg:rgba(255,140,66,.14);--cibg:rgba(255,140,66,.08);--cib:rgba(255,140,66,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">📱</div><div><div class="cctitle">تطوير الجوال</div><div class="ccsub">React Native · Flutter · iOS · Android</div></div></div>
-      <div class="ccdesc">تطبيقات الهاتف — من cross-platform إلى Native لكل منصة، مع مشاريع حقيقية وخطوات نشر واضحة</div>
-      <div class="ccchips"><span class="cchip">React Native</span><span class="cchip">Flutter</span><span class="cchip">Swift</span><span class="cchip">Kotlin</span><span class="cchip">Expo</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhigh">✅ طلب جيد</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="ai.html" class="catcard" style="--cc:#a259ff;--cg:rgba(162,89,255,.14);--cibg:rgba(162,89,255,.08);--cib:rgba(162,89,255,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">🤖</div><div><div class="cctitle">الذكاء الاصطناعي</div><div class="ccsub">ML · Deep Learning · NLP · Computer Vision · GenAI</div></div></div>
-      <div class="ccdesc">مستقبل التكنولوجيا — 4 تخصصات متخصصة في AI وML مع روادماب رياضية وعملية شاملة</div>
-      <div class="ccchips"><span class="cchip">Python</span><span class="cchip">PyTorch</span><span class="cchip">TensorFlow</span><span class="cchip">HuggingFace</span><span class="cchip">LangChain</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>4 تخصصات <span class="dbadge dhot">🔥 الأسرع نمواً</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="data.html" class="catcard" style="--cc:#3ddc97;--cg:rgba(61,220,151,.14);--cibg:rgba(61,220,151,.08);--cib:rgba(61,220,151,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">📊</div><div><div class="cctitle">علم البيانات</div><div class="ccsub">Data Science · Engineering · BI · Analytics</div></div></div>
-      <div class="ccdesc">تحليل البيانات وبناء خطوط الأنابيب ولوحات القيادة — ثلاثة مسارات متكاملة في عالم البيانات</div>
-      <div class="ccchips"><span class="cchip">Python</span><span class="cchip">SQL</span><span class="cchip">Spark</span><span class="cchip">Power BI</span><span class="cchip">Tableau</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 رواتب عالية</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="security.html" class="catcard" style="--cc:#ff4d6d;--cg:rgba(255,77,109,.14);--cibg:rgba(255,77,109,.08);--cib:rgba(255,77,109,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">🔐</div><div><div class="cctitle">الأمن السيبراني</div><div class="ccsub">Pentesting · SOC · AppSec · Forensics</div></div></div>
-      <div class="ccdesc">حماية الأنظمة والشبكات — من Ethical Hacking إلى SOC Analysis مع مسارات تفصيلية للشهادات</div>
-      <div class="ccchips"><span class="cchip">Kali Linux</span><span class="cchip">Metasploit</span><span class="cchip">Burp Suite</span><span class="cchip">Splunk</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 رواتب ضخمة</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="devops.html" class="catcard" style="--cc:#38b6ff;--cg:rgba(56,182,255,.14);--cibg:rgba(56,182,255,.08);--cib:rgba(56,182,255,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">☁️</div><div><div class="cctitle">DevOps والسحابة</div><div class="ccsub">DevOps · Cloud · SRE · Platform Engineering</div></div></div>
-      <div class="ccdesc">أتمتة النشر وإدارة البنية التحتية السحابية — AWS وAzure وGCP مع Kubernetes وTerraform</div>
-      <div class="ccchips"><span class="cchip">Docker</span><span class="cchip">Kubernetes</span><span class="cchip">Terraform</span><span class="cchip">AWS</span><span class="cchip">CI/CD</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>2 تخصص <span class="dbadge dhot">🔥 أعلى رواتب</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
-    <a href="other.html" class="catcard" style="--cc:#ff5fa0;--cg:rgba(255,95,160,.14);--cibg:rgba(255,95,160,.08);--cib:rgba(255,95,160,.2)">
-      <div class="cstripe"></div>
-      <div class="cchead"><div class="ccico">🎯</div><div><div class="cctitle">تخصصات متنوعة</div><div class="ccsub">Games · Blockchain · Embedded · UI/UX · QA · DBA</div></div></div>
-      <div class="ccdesc">ألعاب الفيديو، Blockchain، إنترنت الأشياء، تصميم UX، ضمان الجودة، وإدارة قواعد البيانات</div>
-      <div class="ccchips"><span class="cchip">Unity</span><span class="cchip">Solidity</span><span class="cchip">Figma</span><span class="cchip">C/C++</span><span class="cchip">Cypress</span></div>
-      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>6 تخصصات <span class="dbadge drising">📈 متنوعة</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
-    </a>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#3b9eff;--c-glow:rgba(59,158,255,0.15);--c-bg:rgba(59,158,255,0.08);--c-border:rgba(59,158,255,0.2);--card-color1:rgba(59,158,255,0.02);--card-color2:transparent" data-cat="web" onclick="openModal('frontend')" data-delay="0">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top">
+          <div class="card-emoji">🎨</div>
+          <div>
+            <div class="card-title">Frontend Developer</div>
+            <div class="card-sub">واجهات المستخدم · تجربة الاستخدام</div>
+          </div>
+        </div>
+        <div class="card-chips">
+          <span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">JavaScript</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Next.js</span>
+        </div>
+        <div class="card-bottom">
+          <div class="card-meta"><div class="card-meta-dot"></div>8-14 شهر · مبتدئ → محترف <span class="demand-badge demand-hot">🔥 طلب عالي</span></div>
+          <span class="card-goto">الروادماب الكامل ←</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="track-card" style="--c:#3ddc97;--c-glow:rgba(61,220,151,0.15);--c-bg:rgba(61,220,151,0.08);--c-border:rgba(61,220,151,0.2)" data-cat="web" onclick="openModal('backend')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top">
+          <div class="card-emoji">⚙️</div>
+          <div>
+            <div class="card-title">Backend Developer</div>
+            <div class="card-sub">الخوادم · APIs · قواعد البيانات</div>
+          </div>
+        </div>
+        <div class="card-chips">
+          <span class="chip">Node.js</span><span class="chip">Python</span><span class="chip">PostgreSQL</span><span class="chip">Redis</span><span class="chip">GraphQL</span><span class="chip">Docker</span>
+        </div>
+        <div class="card-bottom">
+          <div class="card-meta"><div class="card-meta-dot"></div>10-16 شهر <span class="demand-badge demand-hot">🔥 طلب عالي</span></div>
+          <span class="card-goto">الروادماب ←</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="track-card" style="--c:#9d6fff;--c-glow:rgba(157,111,255,0.15);--c-bg:rgba(157,111,255,0.08);--c-border:rgba(157,111,255,0.2)" data-cat="web" onclick="openModal('fullstack')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top">
+          <div class="card-emoji">🔥</div>
+          <div>
+            <div class="card-title">Full Stack Developer</div>
+            <div class="card-sub">الجمع الكامل · MERN · Next.js</div>
+          </div>
+        </div>
+        <div class="card-chips">
+          <span class="chip">MERN</span><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Prisma</span><span class="chip">AWS</span>
+        </div>
+        <div class="card-bottom">
+          <div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-rising">📈 متصاعد</span></div>
+          <span class="card-goto">الروادماب ←</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- COMPARE -->
-  <div class="sec" style="margin-top:80px" id="compare">
-    <div class="secbar" style="background:linear-gradient(to bottom,var(--cyan),var(--purple))"></div>
-    <div><div class="sectitle">⚖️ مقارنة شاملة للتخصصات</div><div class="secsub">الرواتب · الصعوبة · المدة · الطلب</div></div>
+  <!-- MOBILE -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#ff9354,#ffd166)"></div>
+      <div><h2 class="sec-title">📱 تطوير تطبيقات الجوال</h2><p class="sec-subtitle">Mobile Development · iOS · Android · Cross-Platform</p></div>
+    </div>
+    <span class="sec-badge" style="color:#ff9354;border-color:rgba(255,147,84,0.3)">3 تخصصات</span>
   </div>
-  <div style="overflow-x:auto;border-radius:var(--rl);border:1px solid var(--b1)">
-    <table class="ctable">
-      <thead><tr><th>التخصص</th><th>الصعوبة</th><th>مدة التعلم</th><th>الراتب/شهر</th><th>الطلب</th><th>المستقبل</th></tr></thead>
-      <tbody id="ctbody"></tbody>
-    </table>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#ff9354;--c-glow:rgba(255,147,84,0.15);--c-bg:rgba(255,147,84,0.08);--c-border:rgba(255,147,84,0.2)" data-cat="mobile" onclick="openModal('reactnative')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">⚛️</div><div><div class="card-title">React Native Dev</div><div class="card-sub">iOS & Android من JS واحد</div></div></div>
+        <div class="card-chips"><span class="chip">RN</span><span class="chip">Expo</span><span class="chip">Redux</span><span class="chip">Firebase</span><span class="chip">Navigation</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>8-12 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#06d6a0;--c-glow:rgba(6,214,160,0.15);--c-bg:rgba(6,214,160,0.08);--c-border:rgba(6,214,160,0.2)" data-cat="mobile" onclick="openModal('flutter')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🦋</div><div><div class="card-title">Flutter Developer</div><div class="card-sub">Dart · أداء أصيل · متعدد المنصات</div></div></div>
+        <div class="card-chips"><span class="chip">Dart</span><span class="chip">Flutter</span><span class="chip">BLoC</span><span class="chip">Riverpod</span><span class="chip">Firebase</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>8-13 شهر <span class="demand-badge demand-rising">📈 متصاعد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#ff6bbd;--c-glow:rgba(255,107,189,0.15);--c-bg:rgba(255,107,189,0.08);--c-border:rgba(255,107,189,0.2)" data-cat="mobile" onclick="openModal('native')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🍎</div><div><div class="card-title">Native iOS/Android</div><div class="card-sub">Swift · Kotlin · أداء مثالي</div></div></div>
+        <div class="card-chips"><span class="chip">Swift</span><span class="chip">SwiftUI</span><span class="chip">Kotlin</span><span class="chip">Jetpack</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#a855f7,#ec4899)"></div>
+      <div><h2 class="sec-title">🤖 الذكاء الاصطناعي وتعلم الآلة</h2><p class="sec-subtitle">AI · ML · Deep Learning · GenAI · NLP · Computer Vision</p></div>
+    </div>
+    <span class="sec-badge" style="color:#a855f7;border-color:rgba(168,85,247,0.3)">4 تخصصات</span>
+  </div>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#a855f7;--c-glow:rgba(168,85,247,0.15);--c-bg:rgba(168,85,247,0.08);--c-border:rgba(168,85,247,0.2)" data-cat="ai" onclick="openModal('ml')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🧠</div><div><div class="card-title">ML Engineer</div><div class="card-sub">تعلم الآلة · نماذج ذكية</div></div></div>
+        <div class="card-chips"><span class="chip">Python</span><span class="chip">TensorFlow</span><span class="chip">PyTorch</span><span class="chip">Scikit-learn</span><span class="chip">MLOps</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-hot">🔥 الأعلى طلباً</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#e879f9;--c-glow:rgba(232,121,249,0.15);--c-bg:rgba(232,121,249,0.08);--c-border:rgba(232,121,249,0.2)" data-cat="ai" onclick="openModal('nlp')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">💬</div><div><div class="card-title">NLP Engineer</div><div class="card-sub">معالجة اللغات · Transformers</div></div></div>
+        <div class="card-chips"><span class="chip">HuggingFace</span><span class="chip">BERT</span><span class="chip">GPT</span><span class="chip">LangChain</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>16-22 شهر <span class="demand-badge demand-hot">🔥 طلب عالي</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#34d399;--c-glow:rgba(52,211,153,0.15);--c-bg:rgba(52,211,153,0.08);--c-border:rgba(52,211,153,0.2)" data-cat="ai" onclick="openModal('cv')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">👁️</div><div><div class="card-title">Computer Vision</div><div class="card-sub">رؤية الآلة · YOLO · CNNs</div></div></div>
+        <div class="card-chips"><span class="chip">OpenCV</span><span class="chip">YOLO</span><span class="chip">CNNs</span><span class="chip">PyTorch</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#fb923c;--c-glow:rgba(251,146,60,0.15);--c-bg:rgba(251,146,60,0.08);--c-border:rgba(251,146,60,0.2)" data-cat="ai" onclick="openModal('genai')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">✨</div><div><div class="card-title">GenAI & LLM Engineer</div><div class="card-sub">RAG · Agents · Prompt Eng</div></div></div>
+        <div class="card-chips"><span class="chip">LangChain</span><span class="chip">RAG</span><span class="chip">Agents</span><span class="chip">Vector DB</span><span class="chip">Fine-tuning</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>10-16 شهر <span class="demand-badge demand-hot">🔥 الأسرع نمواً</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#0ea5e9,#10b981)"></div>
+      <div><h2 class="sec-title">📊 علم البيانات والتحليل</h2><p class="sec-subtitle">Data Science · Engineering · BI · Analytics</p></div>
+    </div>
+    <span class="sec-badge" style="color:#0ea5e9;border-color:rgba(14,165,233,0.3)">3 تخصصات</span>
+  </div>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#0ea5e9;--c-glow:rgba(14,165,233,0.15);--c-bg:rgba(14,165,233,0.08);--c-border:rgba(14,165,233,0.2)" data-cat="data" onclick="openModal('datascience')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">📊</div><div><div class="card-title">Data Scientist</div><div class="card-sub">تحليل البيانات · ML · Insights</div></div></div>
+        <div class="card-chips"><span class="chip">Python</span><span class="chip">Pandas</span><span class="chip">Statistics</span><span class="chip">Scikit-learn</span><span class="chip">Tableau</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-hot">🔥 طلب عالي</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#10b981;--c-glow:rgba(16,185,129,0.15);--c-bg:rgba(16,185,129,0.08);--c-border:rgba(16,185,129,0.2)" data-cat="data" onclick="openModal('dataeng')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🔧</div><div><div class="card-title">Data Engineer</div><div class="card-sub">Pipelines · Spark · Warehouses</div></div></div>
+        <div class="card-chips"><span class="chip">Spark</span><span class="chip">Kafka</span><span class="chip">Airflow</span><span class="chip">Snowflake</span><span class="chip">dbt</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-hot">🔥 أعلى رواتب</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#f43f5e;--c-glow:rgba(244,63,94,0.15);--c-bg:rgba(244,63,94,0.08);--c-border:rgba(244,63,94,0.2)" data-cat="data" onclick="openModal('bi')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">📈</div><div><div class="card-title">BI / Data Analyst</div><div class="card-sub">Power BI · Tableau · Dashboards</div></div></div>
+        <div class="card-chips"><span class="chip">Power BI</span><span class="chip">Tableau</span><span class="chip">SQL</span><span class="chip">DAX</span><span class="chip">Excel</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>8-14 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#ef4444,#f97316)"></div>
+      <div><h2 class="sec-title">🔐 الأمن السيبراني</h2><p class="sec-subtitle">Cybersecurity · Pentest · SOC · AppSec · Forensics</p></div>
+    </div>
+    <span class="sec-badge" style="color:#ef4444;border-color:rgba(239,68,68,0.3)">3 تخصصات</span>
+  </div>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#ef4444;--c-glow:rgba(239,68,68,0.15);--c-bg:rgba(239,68,68,0.08);--c-border:rgba(239,68,68,0.2)" data-cat="security" onclick="openModal('pentest')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">💀</div><div><div class="card-title">Penetration Tester</div><div class="card-sub">Ethical Hacking · Red Team</div></div></div>
+        <div class="card-chips"><span class="chip">Kali Linux</span><span class="chip">Metasploit</span><span class="chip">Burp Suite</span><span class="chip">OWASP</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-hot">🔥 رواتب ضخمة</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#f97316;--c-glow:rgba(249,115,22,0.15);--c-bg:rgba(249,115,22,0.08);--c-border:rgba(249,115,22,0.2)" data-cat="security" onclick="openModal('soc')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🛡️</div><div><div class="card-title">SOC / Blue Team</div><div class="card-sub">SIEM · Threat Hunting · Forensics</div></div></div>
+        <div class="card-chips"><span class="chip">Splunk</span><span class="chip">MITRE ATT&CK</span><span class="chip">SIEM</span><span class="chip">Forensics</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#dc2626;--c-glow:rgba(220,38,38,0.15);--c-bg:rgba(220,38,38,0.08);--c-border:rgba(220,38,38,0.2)" data-cat="security" onclick="openModal('appsec')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🔒</div><div><div class="card-title">AppSec Engineer</div><div class="card-sub">DevSecOps · SAST/DAST · Code Audit</div></div></div>
+        <div class="card-chips"><span class="chip">Semgrep</span><span class="chip">OWASP</span><span class="chip">Burp</span><span class="chip">DevSecOps</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-rising">📈 متصاعد</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVOPS -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#f97316,#60a5fa)"></div>
+      <div><h2 class="sec-title">☁️ DevOps والسحابة</h2><p class="sec-subtitle">DevOps · Cloud · SRE · Platform Engineering</p></div>
+    </div>
+    <span class="sec-badge" style="color:#60a5fa;border-color:rgba(96,165,250,0.3)">2 تخصصات</span>
+  </div>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#f97316;--c-glow:rgba(249,115,22,0.15);--c-bg:rgba(249,115,22,0.08);--c-border:rgba(249,115,22,0.2)" data-cat="devops" onclick="openModal('devops')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">🔁</div><div><div class="card-title">DevOps Engineer</div><div class="card-sub">CI/CD · Docker · Kubernetes</div></div></div>
+        <div class="card-chips"><span class="chip">Docker</span><span class="chip">K8s</span><span class="chip">Terraform</span><span class="chip">Ansible</span><span class="chip">Prometheus</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-hot">🔥 طلب عالي</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+    <div class="track-card" style="--c:#60a5fa;--c-glow:rgba(96,165,250,0.15);--c-bg:rgba(96,165,250,0.08);--c-border:rgba(96,165,250,0.2)" data-cat="devops" onclick="openModal('cloud')">
+      <div class="card-stripe"></div>
+      <div class="card-inner">
+        <div class="card-top"><div class="card-emoji">☁️</div><div><div class="card-title">Cloud Architect</div><div class="card-sub">AWS · Azure · GCP · Serverless</div></div></div>
+        <div class="card-chips"><span class="chip">AWS</span><span class="chip">Azure</span><span class="chip">GCP</span><span class="chip">VPC</span><span class="chip">IAM</span><span class="chip">Serverless</span></div>
+        <div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>14-20 شهر <span class="demand-badge demand-hot">🔥 أعلى رواتب</span></div><span class="card-goto">الروادماب ←</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER -->
+  <div class="sec-head">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,#ec4899,#eab308)"></div>
+      <div><h2 class="sec-title">🎯 تخصصات متنوعة</h2><p class="sec-subtitle">Games · Blockchain · Embedded · UI/UX · QA · DBA</p></div>
+    </div>
+    <span class="sec-badge" style="color:#ec4899;border-color:rgba(236,72,153,0.3)">6 تخصصات</span>
+  </div>
+  <div class="cards-grid">
+    <div class="track-card" style="--c:#ec4899;--c-glow:rgba(236,72,153,0.15);--c-bg:rgba(236,72,153,0.08);--c-border:rgba(236,72,153,0.2)" data-cat="game" onclick="openModal('gamedev')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">🎮</div><div><div class="card-title">Game Developer</div><div class="card-sub">Unity · Unreal · C# · C++</div></div></div><div class="card-chips"><span class="chip">Unity</span><span class="chip">Unreal</span><span class="chip">C#</span><span class="chip">C++</span><span class="chip">Shaders</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+    <div class="track-card" style="--c:#eab308;--c-glow:rgba(234,179,8,0.15);--c-bg:rgba(234,179,8,0.08);--c-border:rgba(234,179,8,0.2)" data-cat="blockchain" onclick="openModal('blockchain')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">⛓️</div><div><div class="card-title">Blockchain / Web3</div><div class="card-sub">Solidity · DeFi · Smart Contracts</div></div></div><div class="card-chips"><span class="chip">Solidity</span><span class="chip">Ethereum</span><span class="chip">Hardhat</span><span class="chip">Web3.js</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-16 شهر <span class="demand-badge demand-rising">📈 متصاعد</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+    <div class="track-card" style="--c:#84cc16;--c-glow:rgba(132,204,22,0.15);--c-bg:rgba(132,204,22,0.08);--c-border:rgba(132,204,22,0.2)" data-cat="other" onclick="openModal('embedded')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">🔌</div><div><div class="card-title">Embedded & IoT</div><div class="card-sub">C/C++ · RTOS · Microcontrollers</div></div></div><div class="card-chips"><span class="chip">C/C++</span><span class="chip">FreeRTOS</span><span class="chip">Arduino</span><span class="chip">MQTT</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>12-18 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+    <div class="track-card" style="--c:#a78bfa;--c-glow:rgba(167,139,250,0.15);--c-bg:rgba(167,139,250,0.08);--c-border:rgba(167,139,250,0.2)" data-cat="other" onclick="openModal('uiux')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">🎭</div><div><div class="card-title">UI/UX Designer</div><div class="card-sub">Figma · Design Systems · Research</div></div></div><div class="card-chips"><span class="chip">Figma</span><span class="chip">User Research</span><span class="chip">Prototyping</span><span class="chip">Design Sys</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>8-12 شهر <span class="demand-badge demand-hot">🔥 طلب عالي</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+    <div class="track-card" style="--c:#2dd4bf;--c-glow:rgba(45,212,191,0.15);--c-bg:rgba(45,212,191,0.08);--c-border:rgba(45,212,191,0.2)" data-cat="other" onclick="openModal('qa')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">🧪</div><div><div class="card-title">QA / Test Engineer</div><div class="card-sub">Automation · Selenium · Cypress</div></div></div><div class="card-chips"><span class="chip">Cypress</span><span class="chip">Playwright</span><span class="chip">Selenium</span><span class="chip">K6</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>8-12 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+    <div class="track-card" style="--c:#fb7185;--c-glow:rgba(251,113,133,0.15);--c-bg:rgba(251,113,133,0.08);--c-border:rgba(251,113,133,0.2)" data-cat="other" onclick="openModal('dba')"><div class="card-stripe"></div><div class="card-inner"><div class="card-top"><div class="card-emoji">🗄️</div><div><div class="card-title">Database Admin (DBA)</div><div class="card-sub">PostgreSQL · MongoDB · Performance</div></div></div><div class="card-chips"><span class="chip">PostgreSQL</span><span class="chip">MongoDB</span><span class="chip">Redis</span><span class="chip">Optimization</span></div><div class="card-bottom"><div class="card-meta"><div class="card-meta-dot"></div>10-16 شهر <span class="demand-badge demand-high">✅ طلب جيد</span></div><span class="card-goto">الروادماب ←</span></div></div></div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div id="compare" class="compare-section">
+    <div class="sec-head" style="margin-top:80px">
+      <div class="sec-title-wrap">
+        <div class="sec-bar" style="background:linear-gradient(to bottom,var(--cyan),var(--purple))"></div>
+        <div><h2 class="sec-title">⚖️ مقارنة التخصصات</h2><p class="sec-subtitle">مقارنة شاملة للرواتب والصعوبة والطلب والمدة</p></div>
+      </div>
+    </div>
+    <div style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>التخصص</th>
+            <th>الصعوبة</th>
+            <th>مدة التعلم</th>
+            <th>متوسط الراتب / شهر</th>
+            <th>الطلب</th>
+            <th>المستقبل</th>
+          </tr>
+        </thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- MASTER TIMELINE -->
-  <div class="sec" style="margin-top:80px" id="timeline">
-    <div class="secbar" style="background:linear-gradient(to bottom,var(--cyan),transparent)"></div>
-    <div><div class="sectitle">🗺️ المسار العام من الصفر للاحتراف</div><div class="secsub">خريطة طريقك من اليوم الأول حتى أول وظيفة</div></div>
+  <div id="timeline" class="timeline-section">
+    <div class="sec-head">
+      <div class="sec-title-wrap">
+        <div class="sec-bar" style="background:linear-gradient(to bottom,var(--cyan),transparent)"></div>
+        <div><h2 class="sec-title">🗺️ المسار العام من الصفر للاحتراف</h2><p class="sec-subtitle">خريطة طريقك من أول يوم حتى أول وظيفة</p></div>
+      </div>
+    </div>
+    <div class="tl-wrap" id="tlWrap"></div>
   </div>
-  <div class="tlwrap" id="tlwrap"></div>
 
   <!-- RESOURCES -->
-  <div class="sec" style="margin-top:80px" id="resources">
-    <div class="secbar" style="background:linear-gradient(to bottom,var(--yellow),var(--orange))"></div>
-    <div><div class="sectitle">📚 أفضل المصادر التعليمية</div><div class="secsub">مجانية ومدفوعة · عربية وإنجليزية</div></div>
+  <div id="resources" class="sec-head" style="margin-top:80px">
+    <div class="sec-title-wrap">
+      <div class="sec-bar" style="background:linear-gradient(to bottom,var(--yellow),var(--orange))"></div>
+      <div><h2 class="sec-title">📚 أفضل المصادر التعليمية</h2><p class="sec-subtitle">كورسات · كتب · مواقع · يوتيوب</p></div>
+    </div>
   </div>
-  <div class="resgrid" id="resgrid"></div>
+  <div class="resources-showcase" id="resShowcase"></div>
 
 </div>
 
-<footer>
-  <div class="flogo">&lt;/CodePath&gt;</div>
-  <div class="fdev">🛠️ تم التطوير بواسطة Eng. Omar Hamdi</div>
-  <div class="fcopy">© 2025 CodePath — جميع الحقوق محفوظة</div>
-  <div class="flinks">
-    <a href="index.html" class="flink">الرئيسية</a>
-    <a href="quiz.html" class="flink">اختبار التخصص</a>
-    <a href="web.html" class="flink">الويب</a>
-    <a href="mobile.html" class="flink">الموبايل</a>
-    <a href="ai.html" class="flink">AI</a>
-    <a href="data.html" class="flink">البيانات</a>
-    <a href="security.html" class="flink">الأمن</a>
-    <a href="devops.html" class="flink">DevOps</a>
-    <a href="other.html" class="flink">أخرى</a>
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeIfOut(event)">
+  <div class="modal" id="modal">
+    <div class="modal-hero" id="mHero">
+      <div class="modal-hero-bg" id="mHeroBg"></div>
+      <div class="modal-hero-content">
+        <div class="modal-big-icon" id="mIcon"></div>
+        <div class="modal-hero-text">
+          <div class="modal-pretitle" id="mPre"></div>
+          <div class="modal-title" id="mTitle"></div>
+          <div class="modal-tagline" id="mTag"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-quick-stats" id="mStats"></div>
+    <div class="modal-tabs" id="mTabs"></div>
+    <div class="modal-body" id="mBody"></div>
   </div>
-</footer>
+</div>
+
+<!-- BTT -->
 <button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">&lt;/CodePath&gt;</div>
+  <p class="footer-text">خريطة طريق البرمجة الشاملة · 2025 · جميع التخصصات</p>
+  <div class="footer-links">
+    <span class="footer-link" onclick="scrollToId('tracks')">التخصصات</span>
+    <span class="footer-link" onclick="scrollToId('compare')">المقارنة</span>
+    <span class="footer-link" onclick="scrollToId('timeline')">المسار العام</span>
+    <span class="footer-link" onclick="scrollToId('resources')">المصادر</span>
+    <span class="footer-link" onclick="scrollToId('quiz')">اكتشف مسارك</span>
+  </div>
+</footer>
+
 <script>
-// PARTICLES
-const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
-function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
-const pts=[];for(let i=0;i<100;i++){pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,s:Math.random()*1.4+.3,a:Math.random()*.35+.08,c:['#00f5d4','#38b6ff','#a259ff','#ff5fa0'][Math.floor(Math.random()*4)]})}
-function ani(){cv.clearRect(0,0,cv.width,cv.height);pts.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;for(let j=i+1;j<pts.length;j++){const d=Math.hypot(p.x-pts[j].x,p.y-pts[j].y);if(d<110){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,245,212,${.035*(1-d/110)})`;cx.lineWidth=.5;cx.stroke()}}cx.beginPath();cx.arc(p.x,p.y,p.s,0,Math.PI*2);cx.fillStyle=p.c;cx.globalAlpha=p.a;cx.fill();cx.globalAlpha=1});requestAnimationFrame(ani)}ani();
+// ===================================
+// BG PARTICLE SYSTEM
+// ===================================
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
 
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.alpha = Math.random() * 0.4 + 0.1;
+    this.color = ['#00f5d4','#3b9eff','#9d6fff','#ff6bbd'][Math.floor(Math.random()*4)];
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.alpha;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function animBg() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,245,212,${0.04 * (1 - dist/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+    particles[i].update();
+    particles[i].draw();
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animBg);
+}
+animBg();
+
+// ===================================
 // CURSOR
-const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
-let mx=0,my=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';setTimeout(()=>{cur2.style.left=mx+'px';cur2.style.top=my+'px'},80)});
+// ===================================
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursorTrail');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  setTimeout(() => {
+    trail.style.left = mx + 'px';
+    trail.style.top = my + 'px';
+  }, 80);
+});
+document.addEventListener('mousedown', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; });
+document.addEventListener('mouseup', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; });
 
-// PROGRESS BAR
-window.addEventListener('scroll',()=>{const p=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;document.getElementById('pgbar').style.width=p+'%';document.getElementById('btt').classList.toggle('vis',window.scrollY>400)});
-
-// COUNTERS
-const obs=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-target]').forEach(el=>{const t=+el.dataset.target,s=el.dataset.suffix||'';let c=0;const st=setInterval(()=>{c=Math.min(c+Math.ceil(t/50),t);el.textContent=c+s;if(c>=t)clearInterval(st)},20)});obs.disconnect()}})},{threshold:.3});
-const hs=document.querySelector('.hstats');if(hs)obs.observe(hs);
-
-// COMPARE TABLE
-const crows=[
-  {n:'🎨 Frontend Dev',d:'متوسط',dur:'8-14 شهر',sal:'$1.5K–12K',dem:'🔥 عالي',tr:'📈',dc:'cm'},
-  {n:'⚙️ Backend Dev',d:'متوسط',dur:'10-16 شهر',sal:'$2K–14K',dem:'🔥 عالي',tr:'📈',dc:'cm'},
-  {n:'🔥 Full Stack',d:'صعب',dur:'14-20 شهر',sal:'$2.5K–18K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
-  {n:'📱 React Native',d:'متوسط',dur:'8-12 شهر',sal:'$2K–13K',dem:'✅ جيد',tr:'📈',dc:'cm'},
-  {n:'🦋 Flutter',d:'متوسط',dur:'8-13 شهر',sal:'$2K–12K',dem:'📈 متصاعد',tr:'🚀',dc:'cm'},
-  {n:'🍎 Native iOS/Android',d:'صعب',dur:'12-18 شهر',sal:'$3K–15K',dem:'✅ جيد',tr:'📈',dc:'ch'},
-  {n:'🧠 ML Engineer',d:'صعب جداً',dur:'14-20 شهر',sal:'$4K–25K',dem:'🔥 الأعلى',tr:'🚀',dc:'ch'},
-  {n:'💬 NLP Engineer',d:'صعب جداً',dur:'16-22 شهر',sal:'$5K–25K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
-  {n:'👁️ Computer Vision',d:'صعب',dur:'14-20 شهر',sal:'$4K–22K',dem:'✅ جيد',tr:'🚀',dc:'ch'},
-  {n:'✨ GenAI Engineer',d:'صعب',dur:'10-16 شهر',sal:'$5K–28K',dem:'🔥 الأسرع',tr:'🚀',dc:'ch'},
-  {n:'📊 Data Scientist',d:'صعب',dur:'12-18 شهر',sal:'$2.5K–20K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
-  {n:'🔧 Data Engineer',d:'صعب',dur:'14-20 شهر',sal:'$4K–18K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
-  {n:'📈 BI Analyst',d:'سهل',dur:'8-14 شهر',sal:'$1.5K–10K',dem:'✅ جيد',tr:'📈',dc:'ce'},
-  {n:'💀 Pentest',d:'صعب جداً',dur:'14-20 شهر',sal:'$2.5K–25K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
-  {n:'🛡️ SOC Analyst',d:'متوسط',dur:'12-18 شهر',sal:'$2K–15K',dem:'✅ جيد',tr:'📈',dc:'cm'},
-  {n:'🔒 AppSec Engineer',d:'صعب',dur:'12-18 شهر',sal:'$3K–16K',dem:'📈 متصاعد',tr:'📈',dc:'ch'},
-  {n:'🔁 DevOps Engineer',d:'صعب',dur:'14-20 شهر',sal:'$3K–18K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
-  {n:'☁️ Cloud Architect',d:'صعب',dur:'14-20 شهر',sal:'$5K–22K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
-  {n:'🎮 Game Developer',d:'صعب',dur:'12-18 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'ch'},
-  {n:'⛓️ Blockchain Dev',d:'صعب جداً',dur:'12-16 شهر',sal:'$3K–25K',dem:'📈 دوري',tr:'🔄',dc:'ch'},
-  {n:'🔌 Embedded / IoT',d:'صعب',dur:'12-18 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'ch'},
-  {n:'🎭 UI/UX Designer',d:'سهل',dur:'8-12 شهر',sal:'$1.5K–18K',dem:'🔥 عالي',tr:'📈',dc:'ce'},
-  {n:'🧪 QA Engineer',d:'سهل',dur:'8-12 شهر',sal:'$1.5K–13K',dem:'✅ جيد',tr:'📈',dc:'ce'},
-  {n:'🗄️ DBA',d:'متوسط',dur:'10-16 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'cm'},
-];
-const tb=document.getElementById('ctbody');
-crows.forEach(r=>{tb.innerHTML+=`<tr><td class="ctname">${r.n}</td><td><span class="ctsec ${r.dc}">${r.d}</span></td><td class="ctdur">${r.dur}</td><td class="ctsal">${r.sal}</td><td>${r.dem}</td><td style="font-size:1.1rem">${r.tr}</td></tr>`});
-
-// TIMELINE
-const tld=[
-  {s:'r',ico:'🌟',ph:'قبل البداية',ti:'التهيئة الذهنية والبيئة',de:'ثبّت VS Code وNodejs وGit. تعلم التعامل مع Terminal، افهم كيف يعمل الإنترنت، وتعلم كيف تبحث وتتعلم بنفسك — هذا يستغرق أسبوعاً أو اثنين.',tg:['VS Code','Git أساسي','Terminal','Google بكفاءة']},
-  {s:'l',ico:'💻',ph:'المرحلة 1 · 1-3 شهور',ti:'لغة البرمجة الأولى',de:'اختر Python للـ AI والبيانات أو JavaScript للويب. ركز على المنطق: المتغيرات، الشروط، الحلقات، الدوال. حل 50-100 مسألة بسيطة.',tg:['Python أو JavaScript','OOP','Problem Solving','Algorithms أساسي']},
-  {s:'r',ico:'🔧',ph:'المرحلة 2 · الشهر 2-3',ti:'أدوات المطور الأساسية',de:'Git وGitHub — كل مطور في العالم يستخدمهما. تعلم commit, branch, merge, PR. افتح حساب GitHub وابدأ بناء ملفك المهني من اليوم الأول.',tg:['Git & GitHub','CLI','SSH','README كتابة']},
-  {s:'l',ico:'🎯',ph:'المرحلة 3 · الشهر 3-8',ti:'اختر تخصصك والتزم به',de:'راجع صفحات الموقع واختر تخصصاً واحداً. التزم 5-6 أشهر متواصلة. القفز بين التخصصات يضيع الوقت ويشتت التركيز.',tg:['تخصص واحد','التزام 6 أشهر','مشروع أسبوعي','مراجعة يومية']},
-  {s:'r',ico:'🏗️',ph:'المرحلة 4 · الشهر 6-14',ti:'ابنِ مشاريع حقيقية',de:'المهارة تأتي من البناء لا المشاهدة. ابنِ 4-6 مشاريع من اهتمامك الشخصي، انشرها على الإنترنت، واجعل الكود مفتوحاً على GitHub.',tg:['5 مشاريع حقيقية','Deploy Live','Code Review','GitHub Public']},
-  {s:'l',ico:'🌐',ph:'المرحلة 5 · الشهر 12-18',ti:'الحضور المهني والشبكة',de:'LinkedIn محدّث، GitHub نشط، اكتب مقالات تقنية، شارك في مجتمعات المطورين. الفرص تأتي من الناس لا من التطبيقات وحدها.',tg:['LinkedIn','GitHub Portfolio','كتابة تقنية','Community']},
-  {s:'r',ico:'🚀',ph:'المرحلة 6 · +14 شهر',ti:'دخول سوق العمل',de:'CV احترافي، تدرب على المقابلات التقنية، راجع DSA الأساسية. قدّم على 20-30 وظيفة. للفريلانس: Upwork وMostaql. الرفض طبيعي — استمر دائماً.',tg:['Technical Interview','DSA أساسي','System Design','Freelancing']}
-];
-const tw=document.getElementById('tlwrap');
-tld.forEach(it=>{
-  if(it.s==='r'){tw.innerHTML+=`<div class="tlr"><div class="tlcard"><div class="tlphase">${it.ph}</div><div class="tltitle">${it.ti}</div><div class="tldesc">${it.de}</div><div class="tltags">${it.tg.map(t=>`<span class="tltag">${t}</span>`).join('')}</div></div></div><div class="tlce"><div class="tlline"></div><div class="tlnode">${it.ico}</div><div class="tlline"></div></div><div class="tlemp"></div>`}
-  else{tw.innerHTML+=`<div class="tlemp"></div><div class="tlce"><div class="tlline"></div><div class="tlnode">${it.ico}</div><div class="tlline"></div></div><div class="tll"><div class="tlcard"><div class="tlphase">${it.ph}</div><div class="tltitle">${it.ti}</div><div class="tldesc">${it.de}</div><div class="tltags">${it.tg.map(t=>`<span class="tltag">${t}</span>`).join('')}</div></div></div>`}
+// ===================================
+// SCROLL PROGRESS
+// ===================================
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  const btt = document.getElementById('btt');
+  btt.classList.toggle('visible', window.scrollY > 500);
 });
 
-// RESOURCES
-const ress=[
-  {i:'🟡',t:'مجاني كامل',n:'freeCodeCamp',d:'أشمل منصة تعليمية مجانية للويب وأكثر'},
-  {i:'🔵',t:'تفاعلي',n:'The Odin Project',d:'مسار Full Stack تفاعلي مفتوح المصدر'},
-  {i:'🟢',t:'عربي',n:'Elzero Web School',d:'أفضل قناة عربية لتطوير الويب'},
-  {i:'🔴',t:'عربي',n:'حسوب Academy',d:'أدلة وشروحات عربية شاملة'},
-  {i:'🟣',t:'خرائط',n:'roadmap.sh',d:'خرائط تفاعلية لكل مسار ممكن'},
-  {i:'⚫',t:'تدريب',n:'LeetCode',d:'تحديات الخوارزميات للمقابلات'},
-  {i:'🎥',t:'يوتيوب',n:'Traversy Media',d:'كورسات ويب بالإنجليزية'},
-  {i:'📗',t:'توثيق',n:'MDN Web Docs',d:'المرجع الرسمي لتقنيات الويب'},
-  {i:'🎮',t:'أمن',n:'TryHackMe',d:'تعلم الأمن السيبراني تفاعلياً'},
-  {i:'🏅',t:'مسابقات',n:'Kaggle',d:'أفضل مكان لتعلم Data Science'},
-  {i:'📺',t:'يوتيوب',n:'StatQuest',d:'إحصاء وML بأبسط طريقة'},
-  {i:'🎓',t:'مجاني',n:'fast.ai',d:'Deep Learning عملياً ومجاناً'},
-  {i:'☁️',t:'DevOps',n:'TechWorld with Nana',d:'DevOps من الصفر'},
-  {i:'🔥',t:'Full Stack',n:'Full Stack Open',d:'مسار MERN من جامعة هلسنكي'},
-  {i:'🤗',t:'AI',n:'HuggingFace Course',d:'NLP وGenAI مجاناً'},
-  {i:'🛡️',t:'أمن ويب',n:'PortSwigger Academy',d:'أمن الويب مجاناً بالكامل'},
-];
-const rg=document.getElementById('resgrid');
-ress.forEach(r=>{rg.innerHTML+=`<div class="rescard"><span class="resico">${r.i}</span><div><div class="restype">${r.t}</div><div class="resname">${r.n}</div><div class="resdesc">${r.d}</div></div></div>`});
+// ===================================
+// COUNTER ANIMATION
+// ===================================
+function animCount(el, target, suffix='') {
+  let cur = 0;
+  const step = Math.ceil(target / 60);
+  const t = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = cur + suffix;
+    if (cur >= target) clearInterval(t);
+  }, 20);
+}
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animCount(document.getElementById('c1'), 25);
+      animCount(document.getElementById('c2'), 250, '+');
+      animCount(document.getElementById('c3'), 120, '+');
+      animCount(document.getElementById('c4'), 90, '+');
+      animCount(document.getElementById('c5'), 60, '+');
+      observer.disconnect();
+    }
+  });
+}, {threshold:0.3});
+observer.observe(document.querySelector('.hero-stats'));
 
+// ===================================
+// UTILS
+// ===================================
+function scrollToId(id) {
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ===================================
+// QUIZ
+// ===================================
+const quizData = [
+  { q: 'ما الذي يشغلك أكثر؟', opts: [
+    {t:'بناء ما يراه الناس — واجهات جميلة', v:'frontend'},
+    {t:'حل مشاكل البيانات والـ APIs', v:'backend'},
+    {t:'الذكاء الاصطناعي والمستقبل', v:'ai'},
+    {t:'الأمن وحماية الأنظمة', v:'security'}
+  ]},
+  { q: 'كيف تصف نفسك؟', opts: [
+    {t:'مبدع يحب التصميم والجمال', v:'frontend'},
+    {t:'منطقي يحب حل الأنظمة المعقدة', v:'backend'},
+    {t:'باحث يحب البيانات والأرقام', v:'data'},
+    {t:'شخص يحب اكتشاف الثغرات', v:'security'}
+  ]},
+  { q: 'ما هدفك؟', opts: [
+    {t:'راتب عالي + استقرار', v:'devops'},
+    {t:'مشاريع مبتكرة وإبداعية', v:'frontend'},
+    {t:'فهم كيف تعمل الأشياء', v:'embedded'},
+    {t:'أكون في طليعة التكنولوجيا', v:'ai'}
+  ]},
+  { q: 'ما خبرتك البرمجية الحالية؟', opts: [
+    {t:'صفر — أبدأ من الصفر', v:'frontend'},
+    {t:'أعرف أساسيات', v:'fullstack'},
+    {t:'لدي خلفية برمجية', v:'backend'},
+    {t:'متمرس وأريد التخصص', v:'ai'}
+  ]}
+];
+
+const quizMap = {
+  frontend: {name:'🎨 Frontend Developer', desc:'تخصصك في بناء واجهات المستخدم الجميلة والتفاعلية', key:'frontend'},
+  backend: {name:'⚙️ Backend Developer', desc:'أنت مناسب لبناء الأنظمة والـ APIs القوية', key:'backend'},
+  fullstack: {name:'🔥 Full Stack Developer', desc:'جمع الواجهة والخلفية في تخصص متكامل', key:'fullstack'},
+  ai: {name:'🧠 ML / AI Engineer', desc:'مستقبلك في الذكاء الاصطناعي وتعلم الآلة', key:'ml'},
+  data: {name:'📊 Data Scientist', desc:'تحليل البيانات واستخراج القيمة منها', key:'datascience'},
+  security: {name:'🔐 Cybersecurity Specialist', desc:'حماية الأنظمة والشبكات والتطبيقات', key:'pentest'},
+  devops: {name:'☁️ DevOps / Cloud Engineer', desc:'راتب عالي وطلب هائل في سوق العمل', key:'devops'},
+  embedded: {name:'🔌 Embedded Engineer', desc:'برمجة الأجهزة وإنترنت الأشياء', key:'embedded'}
+};
+
+let qIdx = 0, scores = {};
+
+function startQuiz() {
+  document.getElementById('qStart').style.display = 'none';
+  document.querySelector('.quiz-desc').style.display = 'none';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = quizData[qIdx];
+  const qText = document.getElementById('qText');
+  const qOpts = document.getElementById('qOpts');
+  qText.textContent = `${qIdx+1}/4 — ${q.q}`;
+  qText.classList.add('show');
+  qOpts.innerHTML = q.opts.map((o,i) => `<button class="quiz-opt" onclick="pickOpt('${o.v}',this)">${o.t}</button>`).join('');
+  qOpts.classList.add('show');
+}
+
+function pickOpt(val, el) {
+  document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  scores[val] = (scores[val]||0) + 1;
+  setTimeout(() => {
+    qIdx++;
+    if (qIdx < quizData.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }, 400);
+}
+
+function showResult() {
+  document.getElementById('qText').classList.remove('show');
+  document.getElementById('qOpts').classList.remove('show');
+  const winner = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const rec = quizMap[winner] || quizMap.frontend;
+  const r = document.getElementById('qResult');
+  r.innerHTML = `
+    <h3>تخصصك المقترح: ${rec.name}</h3>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:16px">${rec.desc}</p>
+    <button class="quiz-next-btn" onclick="openModal('${rec.key}');document.getElementById('qResult').classList.remove('show')">عرض الروادماب الكامل ←</button>
+    <button style="background:none;border:none;color:var(--text3);font-size:0.78rem;cursor:pointer;margin-top:10px;display:block;margin:10px auto 0" onclick="resetQuiz()">إعادة الاختبار</button>
+  `;
+  r.classList.add('show');
+}
+
+function resetQuiz() {
+  qIdx = 0; scores = {};
+  document.getElementById('qResult').classList.remove('show');
+  document.getElementById('qText').classList.remove('show');
+  document.getElementById('qOpts').classList.remove('show');
+  document.getElementById('qStart').style.display = '';
+  document.querySelector('.quiz-desc').style.display = '';
+}
+
+// ===================================
+// FILTER & SEARCH
+// ===================================
+let currentCat = 'all';
+function setFilter(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  doSearch();
+}
+function doSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.track-card').forEach(c => {
+    const catOk = currentCat==='all' || c.getAttribute('data-cat')===currentCat;
+    const txtOk = !q || c.innerText.toLowerCase().includes(q);
+    c.classList.toggle('d-none', !catOk || !txtOk);
+  });
+}
+
+// ===================================
+// COMPARISON TABLE DATA
+// ===================================
+const compareRows = [
+  {name:'🎨 Frontend Dev', diff:'متوسط', dur:'8-14 شهر', sal:'$1.5K–12K', demand:'🔥 عالي', trend:'📈'},
+  {name:'⚙️ Backend Dev', diff:'متوسط', dur:'10-16 شهر', sal:'$2K–14K', demand:'🔥 عالي', trend:'📈'},
+  {name:'🔥 Full Stack', diff:'صعب', dur:'14-20 شهر', sal:'$2.5K–18K', demand:'🔥 عالي', trend:'📈'},
+  {name:'📱 React Native', diff:'متوسط', dur:'8-12 شهر', sal:'$2K–13K', demand:'✅ جيد', trend:'📈'},
+  {name:'🦋 Flutter', diff:'متوسط', dur:'8-13 شهر', sal:'$2K–12K', demand:'📈 متصاعد', trend:'🚀'},
+  {name:'🧠 ML Engineer', diff:'صعب جداً', dur:'14-20 شهر', sal:'$4K–25K', demand:'🔥 الأعلى', trend:'🚀'},
+  {name:'💬 NLP Engineer', diff:'صعب جداً', dur:'16-22 شهر', sal:'$5K–25K', demand:'🔥 عالي', trend:'🚀'},
+  {name:'✨ GenAI Engineer', diff:'صعب', dur:'10-16 شهر', sal:'$5K–25K', demand:'🔥 الأسرع', trend:'🚀'},
+  {name:'📊 Data Scientist', diff:'صعب', dur:'12-18 شهر', sal:'$2.5K–20K', demand:'🔥 عالي', trend:'📈'},
+  {name:'🔧 Data Engineer', diff:'صعب', dur:'14-20 شهر', sal:'$4K–18K', demand:'🔥 عالي', trend:'🚀'},
+  {name:'📈 BI Analyst', diff:'سهل', dur:'8-14 شهر', sal:'$1.5K–10K', demand:'✅ جيد', trend:'📈'},
+  {name:'💀 Pentest', diff:'صعب جداً', dur:'14-20 شهر', sal:'$2.5K–20K', demand:'🔥 عالي', trend:'📈'},
+  {name:'🛡️ SOC Analyst', diff:'متوسط', dur:'12-18 شهر', sal:'$2K–15K', demand:'✅ جيد', trend:'📈'},
+  {name:'🔁 DevOps', diff:'صعب', dur:'14-20 شهر', sal:'$3K–18K', demand:'🔥 عالي', trend:'🚀'},
+  {name:'☁️ Cloud Architect', diff:'صعب', dur:'14-20 شهر', sal:'$5K–22K', demand:'🔥 عالي', trend:'🚀'},
+  {name:'🎮 Game Dev', diff:'صعب', dur:'12-18 شهر', sal:'$2K–18K', demand:'✅ جيد', trend:'📈'},
+  {name:'⛓️ Blockchain', diff:'صعب جداً', dur:'12-16 شهر', sal:'$3K–25K', demand:'📈 دوري', trend:'🔄'},
+  {name:'🎭 UI/UX', diff:'سهل', dur:'8-12 شهر', sal:'$1.5K–18K', demand:'🔥 عالي', trend:'📈'},
+  {name:'🧪 QA Engineer', diff:'سهل', dur:'8-12 شهر', sal:'$1.5K–13K', demand:'✅ جيد', trend:'📈'},
+  {name:'🗄️ DBA', diff:'متوسط', dur:'10-16 شهر', sal:'$2K–18K', demand:'✅ جيد', trend:'📈'},
+];
+
+const diffClass = {سهل:'diff-easy', متوسط:'diff-med', 'صعب':'diff-hard', 'صعب جداً':'diff-hard'};
+
+const tbody = document.getElementById('compareBody');
+compareRows.forEach(r => {
+  tbody.innerHTML += `
+    <tr>
+      <td class="ct-name">${r.name}</td>
+      <td><span class="ct-diff ${diffClass[r.diff]||'diff-med'}">${r.diff}</span></td>
+      <td class="ct-dur">${r.dur}</td>
+      <td class="ct-sal">${r.sal}</td>
+      <td class="ct-demand"><span class="demand-badge ${r.demand.includes('🔥')?'demand-hot':r.demand.includes('📈')?'demand-rising':'demand-high'}">${r.demand}</span></td>
+      <td class="ct-trend" style="font-size:1.2rem">${r.trend}</td>
+    </tr>
+  `;
+});
+
+// ===================================
+// TIMELINE
+// ===================================
+const tlData = [
+  {side:'right', phase:'المرحلة 0', title:'🌟 التهيئة والبيئة', desc:'ثبّت VS Code، تعلم Terminal الأساسي، افهم كيف يعمل الإنترنت، وثبّت Git. هذا يأخذ أسبوعاً إلى أسبوعين.', tags:['VS Code','Git','Terminal','Browser DevTools'], icon:'🔧'},
+  {side:'left', phase:'المرحلة 1 (1-3 شهور)', title:'🔡 لغة البرمجة الأولى', desc:'Python للـ AI والبيانات، JavaScript للويب. ركز على المنطق البرمجي — المتغيرات، الشروط، الحلقات، الدوال. حل 50-100 مسألة بسيطة.', tags:['Python أو JS','Loops','Functions','OOP Basics','Problem Solving'], icon:'💻'},
+  {side:'right', phase:'المرحلة 2 (الشهر 2-3)', title:'🔧 أدوات المطور الأساسية', desc:'Git وGitHub — كل مطور في العالم يستخدمهما. تعلم commit, branch, merge, pull request. افتح حساب GitHub وابدأ بناء ملفك.', tags:['Git','GitHub','CLI','SSH','Markdown'], icon:'⚙️'},
+  {side:'left', phase:'المرحلة 3 (الشهر 3-8)', title:'🎯 اختر تخصصك والتزم به', desc:'راجع البطاقات أعلاه وفكّر: ما الذي يشغف قلبك؟ اختر تخصصاً واحداً فقط والتزم به 5-6 أشهر متواصلة. القفز بين التخصصات يضيع وقتك.', tags:['تخصص واحد','التزام','5-6 أشهر','مشروع أسبوعي'], icon:'🎯'},
+  {side:'right', phase:'المرحلة 4 (الشهر 6-12)', title:'🔨 ابنِ مشاريع حقيقية', desc:'المهارة لا تأتي من المشاهدة بل من البناء. ابنِ 3-5 مشاريع من اهتمامك الشخصي ونشرها على الإنترنت. الأخطاء هي معلمك الحقيقي.', tags:['3-5 مشاريع','Deploy Live','GitHub Public','Code Review'], icon:'🏗️'},
+  {side:'left', phase:'المرحلة 5 (الشهر 10-16)', title:'🤝 بناء الحضور المهني', desc:'LinkedIn محدّث، GitHub نشط، اكتب مقالات تقنية، شارك في مجتمعات المطورين، تواصل مع أشخاص في المجال. الفرص تأتي من الناس.', tags:['LinkedIn','GitHub Portfolio','Tech Writing','Networking','Community'], icon:'🌐'},
+  {side:'right', phase:'المرحلة 6 (+14 شهر)', title:'🚀 دخول سوق العمل', desc:'حضّر CV احترافياً، تدرب على المقابلات التقنية، راجع DSA الأساسية، قدّم على 20-30 وظيفة. للفريلانس: Upwork وMostaql وحسوب. الرفض طبيعي — استمر.', tags:['Technical Interview','DSA','System Design','Freelancing','Negotiation'], icon:'🏆'},
+];
+
+const tlWrap = document.getElementById('tlWrap');
+tlData.forEach((item, i) => {
+  if (item.side === 'right') {
+    tlWrap.innerHTML += `
+      <div class="tl-item-right">
+        <div class="tl-card">
+          <div class="tl-phase">${item.phase}</div>
+          <div class="tl-title">${item.title}</div>
+          <div class="tl-desc">${item.desc}</div>
+          <div class="tl-tags">${item.tags.map(t=>`<span class="tltag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="tl-center">
+        <div class="tl-line"></div>
+        <div class="tl-node">${item.icon}</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-empty"></div>
+    `;
+  } else {
+    tlWrap.innerHTML += `
+      <div class="tl-empty"></div>
+      <div class="tl-center">
+        <div class="tl-line"></div>
+        <div class="tl-node">${item.icon}</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-item-left">
+        <div class="tl-card">
+          <div class="tl-phase">${item.phase}</div>
+          <div class="tl-title">${item.title}</div>
+          <div class="tl-desc">${item.desc}</div>
+          <div class="tl-tags">${item.tags.map(t=>`<span class="tltag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    `;
+  }
+});
+
+// ===================================
+// TOP RESOURCES
+// ===================================
+const topRes = [
+  {icon:'🟡',type:'مجاني',name:'freeCodeCamp',desc:'أشمل منصة مجانية للويب وأكثر'},
+  {icon:'🔵',type:'مجاني',name:'The Odin Project',desc:'مسار Full Stack تفاعلي كامل'},
+  {icon:'🟢',type:'عربي',name:'Elzero Web School',desc:'أفضل قناة عربية لتطوير الويب'},
+  {icon:'🔴',type:'عربي',name:'حسوب Academy',desc:'أدلة وشروحات عربية شاملة'},
+  {icon:'🟣',type:'خرائط',name:'roadmap.sh',desc:'خرائط تفاعلية لكل مسار'},
+  {icon:'⚫',type:'تدريب',name:'LeetCode',desc:'تحديات الخوارزميات والمقابلات'},
+  {icon:'🎥',type:'يوتيوب',name:'Traversy Media',desc:'كورسات ويب احترافية بالإنجليزية'},
+  {icon:'📗',type:'توثيق',name:'MDN Web Docs',desc:'المرجع الرسمي لكل تقنيات الويب'},
+  {icon:'🎮',type:'تدريب',name:'TryHackMe',desc:'تعلم الأمن السيبراني بالتطبيق'},
+  {icon:'🏅',type:'مسابقات',name:'Kaggle',desc:'أفضل مكان لتعلم Data Science'},
+  {icon:'📺',type:'يوتيوب',name:'StatQuest',desc:'إحصاء وML بأبسط طريقة ممكنة'},
+  {icon:'🎓',type:'كورسات',name:'fast.ai',desc:'Deep Learning عملياً ومجاناً'},
+  {icon:'📺',type:'يوتيوب',name:'TechWorld with Nana',desc:'DevOps من الصفر بالإنجليزية'},
+  {icon:'🔥',type:'مجاني',name:'Full Stack Open',desc:'مسار MERN من جامعة هلسنكي'},
+  {icon:'🤗',type:'AI',name:'HuggingFace Course',desc:'أفضل كورس NLP وGenAI مجاني'},
+  {icon:'🛡️',type:'أمن',name:'PortSwigger Academy',desc:'أمن الويب مجاناً بالكامل'},
+];
+
+const resWrap = document.getElementById('resShowcase');
+topRes.forEach(r => {
+  resWrap.innerHTML += `
+    <div class="rc-card">
+      <span class="rc-icon">${r.icon}</span>
+      <div>
+        <div class="rc-type">${r.type}</div>
+        <div class="rc-name">${r.name}</div>
+        <div class="rc-desc">${r.desc}</div>
+      </div>
+    </div>
+  `;
+});
+
+// ===================================
+// MODAL DATA
+// ===================================
+const MODALS = {
+frontend:{title:'Frontend Developer',pre:'Web Development',tag:'من HTML وCSS إلى React وNext.js — بناء واجهات مستخدم استثنائية',icon:'🎨',color:'#3b9eff',
+stats:[{v:'8-14 شهر',k:'مدة التعلم'},{v:'$1.5K-12K',k:'الراتب/شهر'},{v:'عالي 🔥',k:'الطلب'},{v:'مبتدئ→محترف',k:'المستوى'}],
+roadmap:[
+  {phase:'المرحلة 1',name:'HTML5 الشاملة',desc:'بنية صفحات HTML، العناصر الدلالية (Semantic)، النماذج (Forms) مع Validation، الجداول، الوسائط (Audio/Video)، وإمكانية الوصول (Accessibility/ARIA). تدرب على بناء 5 صفحات HTML كاملة يدوياً بدون CSS.',dur:'3-4 أسابيع',tech:['HTML5','Semantic HTML','Forms','Tables','ARIA','SEO Meta Tags'],res:['MDN HTML Docs','W3Schools HTML5']},
+  {phase:'المرحلة 2',name:'CSS3 والتصميم المتجاوب',desc:'Box Model وPosition، Flexbox بكل تفاصيله، CSS Grid للتخطيطات المعقدة، Animations وTransitions، CSS Variables، Media Queries للـ Responsive Design، وPseudo-elements.',dur:'4-6 أسابيع',tech:['Flexbox','CSS Grid','Animations','Variables','Media Queries','BEM','Tailwind CSS'],res:['CSS Tricks','Flexbox Froggy (مجاني)','Kevin Powell YouTube']},
+  {phase:'المرحلة 3',name:'JavaScript الأساسيات',desc:'المتغيرات، الأنواع، الشروط، الحلقات، الدوال، الـ Scope، الـ Hoisting، Closures، Objects وArrays، والـ Prototype Chain.',dur:'6-8 أسابيع',tech:['ES6+','Functions','Arrays','Objects','Scope','Closures','Prototype'],res:['javascript.info (أفضل مصدر مجاني)','Eloquent JavaScript']},
+  {phase:'المرحلة 4',name:'JavaScript DOM والـ Async',desc:'DOM Manipulation، Event Listeners، Fetch API، Promises، Async/Await، Error Handling، JSON، LocalStorage وSessionStorage.',dur:'3-4 أسابيع',tech:['DOM','Events','Fetch API','Promises','Async/Await','JSON','Web APIs'],res:['MDN JavaScript','javascript.info Async']},
+  {phase:'المرحلة 5',name:'TypeScript',desc:'TypeScript يضيف نظام Types لـ JavaScript. Types، Interfaces، Generics، Enums، Type Guards، Decorators. معظم المشاريع الكبيرة تستخدمه.',dur:'3-4 أسابيع',tech:['Types','Interfaces','Generics','Enums','Type Guards','Utility Types','tsconfig'],res:['TypeScript Official Docs','Total TypeScript (Matt Pocock)']},
+  {phase:'المرحلة 6',name:'React أو Vue',desc:'React: JSX، Components، Props، State (useState)، useEffect، useContext، Custom Hooks، React Router، Data Fetching. اختر React لسوق العمل الأوسع.',dur:'8-10 أسابيع',tech:['React','JSX','Hooks','Context','React Router','Vue','Composition API','Pinia'],res:['React Official Docs (Beta)','Scrimba React Course']},
+  {phase:'المرحلة 7',name:'Next.js وState Management',desc:'Next.js للـ SSR وSSG وApp Router، Server Components، Server Actions. Redux Toolkit أو Zustand لإدارة الـ State المعقد.',dur:'6-8 أسابيع',tech:['Next.js 14','App Router','Server Components','Server Actions','Redux Toolkit','Zustand','TanStack Query'],res:['Next.js Docs','Lee Robinson YouTube','Theo t3.gg YouTube']},
+  {phase:'المرحلة 8',name:'الأداء والـ Testing والنشر',desc:'Web Vitals وكيفية تحسينها، Lighthouse، Jest وTesting Library للـ Unit Tests، Cypress للـ E2E. نشر على Vercel أو Netlify.',dur:'3-4 أسابيع',tech:['Web Vitals','Lighthouse','Jest','React Testing Library','Cypress','Playwright','Vercel','Netlify'],res:['web.dev','Testing Library Docs','Cypress Docs']},
+],
+skills:[{icon:'🌐',n:'HTML5',p:95},{icon:'🎨',n:'CSS3 / Tailwind',p:90},{icon:'⚡',n:'JavaScript ES6+',p:88},{icon:'🔷',n:'TypeScript',p:82},{icon:'⚛️',n:'React',p:88},{icon:'▲',n:'Next.js',p:82},{icon:'📦',n:'Vite / Webpack',p:72},{icon:'🧪',n:'Testing',p:68},{icon:'📱',n:'Responsive Design',p:92},{icon:'⚙️',n:'Git / GitHub',p:88}],
+jobs:[{role:'Junior Frontend Developer',desc:'بناء صفحات وCSSفيكسات',min:1500,max:3500},{role:'Mid-Level Frontend',desc:'تطوير SPAs وأتمتة CI',min:3500,max:7000},{role:'Senior Frontend Engineer',desc:'Architecture وقيادة فريق',min:7000,max:14000},{role:'Staff / Principal',desc:'استراتيجية تقنية وإشراف',min:12000,max:25000}],
+resources:[{emo:'📺',type:'يوتيوب | عربي',name:'Elzero Web School',desc:'الشرح الأشمل لكل مواضيع الويب باللغة العربية',free:true},{emo:'📺',type:'يوتيوب | إنجليزي',name:'Kevin Powell',desc:'أعمق محتوى CSS بالإنجليزية — متخصص CSS 100%',free:true},{emo:'🌐',type:'موقع تعليمي',name:'JavaScript.info',desc:'أفضل مرجع مجاني لتعلم JavaScript بعمق حقيقي',free:true},{emo:'📚',type:'كتاب',name:'Eloquent JavaScript',desc:'من أفضل الكتب للتعمق في JavaScript — مجاني أونلاين',free:true},{emo:'🎓',type:'كورس تفاعلي',name:'Scrimba React',desc:'تعلم React بطريقة تفاعلية لا مثيل لها',free:false},{emo:'📺',type:'يوتيوب',name:'Fireship',desc:'شروحات تقنية سريعة وممتعة ومحدّثة',free:true},{emo:'🎓',type:'مجاني كامل',name:'freeCodeCamp',desc:'مسار HTML→CSS→JS→React مجاني مع شهادات',free:true},{emo:'🏋️',type:'تدريب',name:'Frontend Mentor',desc:'تحديات تصميم حقيقية لبناء portfolio قوي',free:true}],
+certs:[{badge:'🏅',name:'Meta Frontend Professional',org:'Coursera × Meta',tags:['معترف دولياً','9 أشهر','مبتدئ-متوسط']},{badge:'🏅',name:'freeCodeCamp Responsive Web',org:'freeCodeCamp',tags:['مجاني 100%','4 أشهر','مبتدئ']},{badge:'🥇',name:'AWS Certified Developer',org:'Amazon Web Services',tags:['قيمة عالية','متقدم','يغطي كل Stack']}],
+projects:[{lvl:1,name:'صفحة شخصية',desc:'Portfolio بسيط بـ HTML وCSS فقط',stack:['HTML','CSS','Flexbox']},{lvl:1,name:'آلة حاسبة',desc:'Calculator بـ JS خالص',stack:['HTML','CSS','JavaScript']},{lvl:2,name:'تطبيق مهام',desc:'Todo App مع Local Storage',stack:['React','Hooks','CSS Modules']},{lvl:2,name:'متجر إلكتروني',desc:'Frontend لمتجر مع Cart وFiltering',stack:['React','Redux','API']},{lvl:3,name:'Dashboard Analytics',desc:'لوحة إحصاءات مع Charts وAuth',stack:['Next.js','TypeScript','Recharts']},{lvl:3,name:'SaaS Landing Page',desc:'صفحة هبوط بـ Animations متقدمة',stack:['Next.js','Framer Motion','Tailwind']}]
+},
+
+backend:{title:'Backend Developer',pre:'Server-Side Development',tag:'APIs وقواعد البيانات والمنطق الخلفي — العمود الفقري لأي تطبيق',icon:'⚙️',color:'#3ddc97',
+stats:[{v:'10-16 شهر',k:'مدة التعلم'},{v:'$2K-14K',k:'الراتب/شهر'},{v:'عالي 🔥',k:'الطلب'},{v:'متوسط→صعب',k:'الصعوبة'}],
+roadmap:[
+  {phase:'1',name:'لغة Backend واختيارها',desc:'اختر لغتك: Node.js (JS) للبدء السريع، Python للـ AI Integration، Java/Spring للمؤسسات، Go للأداء العالي. Node.js + Python هما الأنسب للمبتدئين اليوم.',dur:'4-6 أسابيع',tech:['Node.js','Python','Java','Go','PHP','OOP','Design Patterns'],res:['Node.js Docs','Python Official','Codecademy Backend']},
+  {phase:'2',name:'HTTP وبروتوكولات الويب',desc:'كيف يعمل الإنترنت: TCP/IP، DNS، HTTP Methods وStatus Codes، Headers، HTTPS وTLS، Cookies وSessions، REST Principles، CORS.',dur:'2-3 أسابيع',tech:['HTTP/HTTPS','REST','Status Codes','CORS','Headers','Cookies','HSTS'],res:['MDN HTTP Docs','HTTP.dev','Postman Learning Center']},
+  {phase:'3',name:'Frameworks وبناء APIs',desc:'Express.js لـ Node بسيط وسريع، NestJS لبنية MVC احترافية، FastAPI لـ Python. تعلم: Routing، Middleware، Validation، Error Handling، Request/Response Lifecycle.',dur:'6-8 أسابيع',tech:['Express.js','NestJS','FastAPI','Django REST','Laravel','Routing','Middleware','Swagger'],res:['Express Docs','NestJS Docs','FastAPI Tutorial']},
+  {phase:'4',name:'قواعد البيانات SQL',desc:'PostgreSQL هو الأقوى والأكثر استخداماً. تعلم: Schema Design، Relations، JOINs، Indexes، Transactions، EXPLAIN ANALYZE. ORMs: Prisma أو SQLAlchemy.',dur:'6-8 أسابيع',tech:['PostgreSQL','MySQL','SQL Joins','Indexing','Transactions','Prisma','SQLAlchemy','Migrations'],res:['PostgreSQL Official Docs','Use The Index Luke','Prisma Docs']},
+  {phase:'5',name:'قواعد بيانات NoSQL وCaching',desc:'MongoDB للبيانات المرنة، Redis للـ Caching السريع جداً والـ Sessions وQueues. متى تختار SQL vs NoSQL — فهم عميق مطلوب.',dur:'3-4 أسابيع',tech:['MongoDB','Redis','Mongoose','Caching Strategies','Cache Invalidation','Session Store'],res:['MongoDB University (مجاني)','Redis Docs']},
+  {phase:'6',name:'المصادقة والأمان',desc:'JWT وكيف يعمل، OAuth 2.0 وOpenID Connect (Google/GitHub login)، bcrypt وArgon2 للـ Password Hashing، Rate Limiting، Input Validation، OWASP Top 10 للـ Backend.',dur:'3-4 أسابيع',tech:['JWT','OAuth 2.0','bcrypt','Passport.js','Rate Limiting','Input Validation','HTTPS'],res:['Auth0 Docs','OWASP Backend Cheat Sheet','JWT.io']},
+  {phase:'7',name:'Testing وCI/CD',desc:'Unit Tests بـ Jest أو Pytest، Integration Tests، API Testing بـ Supertest، Code Coverage، GitHub Actions للـ CI/CD.',dur:'3-4 أسابيع',tech:['Jest','Pytest','Supertest','Integration Tests','Coverage','GitHub Actions','Linting'],res:['Jest Docs','Pytest Docs','GitHub Actions Docs']},
+  {phase:'8',name:'Microservices وScale',desc:'متى تكسر الـ Monolith إلى Microservices، Message Queues بـ RabbitMQ أو Kafka، Event-Driven Architecture، API Gateway، GraphQL كبديل REST.',dur:'4-6 أسابيع',tech:['Microservices','RabbitMQ','Kafka','API Gateway','GraphQL','Apollo Server','gRPC','Event Sourcing'],res:['Microservices.io','RabbitMQ Docs','GraphQL Docs']},
+],
+skills:[{icon:'💚',n:'Node.js / Express',p:88},{icon:'🐍',n:'Python / FastAPI',p:82},{icon:'🐘',n:'PostgreSQL',p:88},{icon:'🍃',n:'MongoDB',p:78},{icon:'⚡',n:'Redis',p:72},{icon:'🔐',n:'Auth / JWT',p:82},{icon:'📡',n:'REST API Design',p:92},{icon:'🐳',n:'Docker Basics',p:72},{icon:'🧪',n:'Testing',p:68},{icon:'🔧',n:'Linux / CLI',p:78}],
+jobs:[{role:'Junior Backend Developer',desc:'بناء endpoints وتعديل DB',min:1500,max:3500},{role:'API Developer',desc:'APIs احترافية قابلة للتوسع',min:3000,max:7000},{role:'Senior Backend Engineer',desc:'Architecture وحل مشاكل Scale',min:7000,max:15000},{role:'Software Architect',desc:'تصميم بنى الأنظمة الكبيرة',min:12000,max:22000}],
+resources:[{emo:'🎓',type:'مجاني',name:'The Odin Project Backend',desc:'مسار Node.js كامل ومجاني وتفاعلي',free:true},{emo:'📺',type:'يوتيوب',name:'Traversy Media',desc:'كورسات Backend بالإنجليزية — ممتازة',free:true},{emo:'📚',type:'كتاب',name:'Designing Data-Intensive Apps',desc:'من أعظم كتب هندسة الأنظمة — ضروري',free:false},{emo:'📺',type:'يوتيوب',name:'Fireship Backend',desc:'شروحات Backend حديثة وسريعة',free:true}],
+certs:[{badge:'🏅',name:'IBM Backend Development',org:'Coursera × IBM',tags:['معترف','9 أشهر','متوسط']},{badge:'🏅',name:'Meta Backend Developer',org:'Coursera × Meta',tags:['معترف','8 أشهر','متوسط']}],
+projects:[{lvl:1,name:'REST API بسيط',desc:'CRUD API للـ Todos',stack:['Node.js','Express','MongoDB']},{lvl:2,name:'نظام مصادقة كامل',desc:'Register/Login بـ JWT وRefresh Tokens',stack:['Node.js','PostgreSQL','JWT','bcrypt']},{lvl:2,name:'API متجر إلكتروني',desc:'Products, Orders, Payments',stack:['NestJS','PostgreSQL','Stripe','Redis']},{lvl:3,name:'Real-time Chat Backend',desc:'WebSockets وغرف الدردشة',stack:['Node.js','Socket.io','Redis Pub/Sub']},{lvl:3,name:'Microservices System',desc:'خدمات مفككة مع Message Queue',stack:['Docker','RabbitMQ','NestJS','PostgreSQL']}]
+},
+
+ml:{title:'Machine Learning Engineer',pre:'Artificial Intelligence',tag:'بناء نماذج تتعلم من البيانات وتتخذ قرارات ذكية — مستقبل التكنولوجيا',icon:'🧠',color:'#a855f7',
+stats:[{v:'14-20 شهر',k:'مدة التعلم'},{v:'$4K-25K',k:'الراتب/شهر'},{v:'الأعلى 🔥',k:'الطلب'},{v:'صعب جداً',k:'الصعوبة'}],
+roadmap:[
+  {phase:'الأساس',name:'الرياضيات للـ ML',desc:'لا يمكن تجاوز هذه المرحلة: الجبر الخطي (Vectors, Matrices, Eigenvalues, SVD)، حساب التفاضل (Derivatives, Chain Rule, Gradient)، الإحصاء (Distributions, Hypothesis Testing, Bayesian Thinking)، الاحتمالات.',dur:'8-12 أسبوع',tech:['Linear Algebra','Calculus','Statistics','Probability','Information Theory','Linear Regression (Math)'],res:['3Blue1Brown YouTube (مجاني)','Khan Academy','MIT OCW Linear Algebra']},
+  {phase:'2',name:'Python للـ ML',desc:'NumPy لعمليات المصفوفات بكفاءة، Pandas لمعالجة وتنظيف البيانات، Matplotlib وSeaborn للتصور، Jupyter Notebooks للتجارب التفاعلية، SciPy للحسابات العلمية.',dur:'4-6 أسابيع',tech:['NumPy','Pandas','Matplotlib','Seaborn','Jupyter','SciPy','Sklearn preprocessing'],res:['Python Data Science Handbook (مجاني)','Kaggle Pandas Course','NumPy Docs']},
+  {phase:'3',name:'ML الكلاسيكي',desc:'Regression (Linear, Ridge, Lasso)، Classification (SVM, KNN, Naive Bayes)، Tree-based (Decision Tree, Random Forest, Gradient Boosting)، Clustering (K-Means, DBSCAN)، Dimensionality Reduction (PCA, UMAP).',dur:'8-10 أسابيع',tech:['Scikit-learn','Linear Regression','SVM','Random Forest','XGBoost','LightGBM','K-Means','PCA'],res:['Scikit-learn User Guide','StatQuest YouTube','Hands-on ML Book']},
+  {phase:'4',name:'تقييم وتحسين النماذج',desc:'Train/Val/Test Split، Cross-Validation (K-Fold, Stratified)، Bias-Variance Tradeoff، Overfitting Prevention (Regularization, Dropout, Early Stopping)، Hyperparameter Tuning (GridSearch, Optuna, Bayesian).',dur:'3-4 أسابيع',tech:['Cross-Validation','GridSearchCV','Optuna','Regularization','Feature Engineering','SHAP','Feature Selection'],res:['Scikit-learn Model Selection','Optuna Docs','SHAP Docs']},
+  {phase:'5',name:'Deep Learning',desc:'Neural Networks وBackpropagation من الصفر رياضياً، Optimizers (SGD, Adam, AdamW)، Activation Functions، Batch Normalization، Dropout. بناء بـ TensorFlow أو PyTorch.',dur:'10-12 أسبوع',tech:['TensorFlow 2','PyTorch','Neural Nets','CNNs','RNNs','LSTM','Batch Norm','Dropout','Transfer Learning'],res:['Deep Learning Book (مجاني)','fast.ai Course','PyTorch Docs']},
+  {phase:'6',name:'التخصص الدقيق',desc:'اختر: Computer Vision (Object Detection, Segmentation, GANs)، NLP (Transformers, BERT, GPT Fine-tuning)، Tabular ML (XGBoost Expert Level)، أو Reinforcement Learning.',dur:'8-12 أسبوع',tech:['Transformers','BERT','GPT','YOLO','U-Net','XGBoost Expert','RL Basics','Q-Learning'],res:['HuggingFace Docs','Papers with Code','Andrej Karpathy YouTube']},
+  {phase:'7',name:'MLOps ونشر النماذج',desc:'تحويل النموذج لـ API بـ FastAPI، Model Versioning بـ MLflow وDVC، Containerization بـ Docker، نشر على AWS SageMaker أو GCP Vertex، Monitoring للـ Model Drift.',dur:'4-6 أسابيع',tech:['FastAPI','MLflow','DVC','Docker','AWS SageMaker','BentoML','Model Monitoring','Data Drift'],res:['MLflow Docs','Full Stack DL Course','BentoML Docs']},
+  {phase:'8',name:'Kaggle والأبحاث',desc:'الاشتراك في مسابقات Kaggle للتطبيق الحقيقي، قراءة Papers على arXiv، إعادة تطبيق الأبحاث، نشر النتائج على GitHub وMedium.',dur:'مستمر',tech:['Kaggle Competitions','arXiv Reading','Paper Implementation','Reproducible Research','Academic Writing'],res:['Kaggle Notebooks','Papers with Code','arXiv.org']},
+],
+skills:[{icon:'🐍',n:'Python',p:95},{icon:'📊',n:'Scikit-learn',p:88},{icon:'🔥',n:'PyTorch',p:85},{icon:'🌊',n:'TensorFlow',p:80},{icon:'🤗',n:'HuggingFace',p:78},{icon:'📈',n:'Statistics',p:85},{icon:'🧮',n:'Linear Algebra',p:80},{icon:'📦',n:'MLflow / DVC',p:70},{icon:'🐳',n:'Docker for ML',p:68},{icon:'☁️',n:'Cloud ML',p:65}],
+jobs:[{role:'ML Engineer',desc:'بناء ونشر نماذج في الإنتاج',min:5000,max:15000},{role:'Research Scientist',desc:'أبحاث ML في الشركات الكبرى',min:10000,max:30000},{role:'Applied Scientist',desc:'حل مشاكل أعمال حقيقية بـ ML',min:8000,max:20000},{role:'MLOps Engineer',desc:'بنية ونشر نماذج ML',min:6000,max:16000}],
+resources:[{emo:'📺',type:'يوتيوب',name:'StatQuest with Josh Starmer',desc:'أفضل شرح للإحصاء وML — مجاني ومبسّط',free:true},{emo:'🎓',type:'كورس مجاني',name:'fast.ai Practical DL',desc:'أسرع طريقة لتعلم Deep Learning عملياً',free:true},{emo:'📚',type:'كتاب',name:'Hands-on Machine Learning',desc:'أفضل كتاب عملي لتعلم ML من الصفر',free:false},{emo:'📺',type:'يوتيوب',name:'Andrej Karpathy',desc:'أعمق فهم للـ Neural Networks من مبانيها',free:true},{emo:'🏆',type:'مسابقات',name:'Kaggle',desc:'تطبيق عملي حقيقي مع مجتمع ضخم',free:true}],
+certs:[{badge:'🥇',name:'Google TensorFlow Developer',org:'Google',tags:['معترف دولياً','متوسط-متقدم']},{badge:'🏅',name:'AWS ML Specialty',org:'Amazon AWS',tags:['قيمة عالية','متقدم']},{badge:'🏅',name:'DeepLearning.AI Specialization',org:'Coursera × Andrew Ng',tags:['أساسي','5 كورسات']}],
+projects:[{lvl:1,name:'تصنيف Iris Dataset',desc:'أول نموذج ML كلاسيكي',stack:['Python','Scikit-learn','Matplotlib']},{lvl:1,name:'تحليل sentiment تغريدات',desc:'NLP بسيط بـ TF-IDF',stack:['Python','NLTK','Logistic Reg']},{lvl:2,name:'نظام توصية أفلام',desc:'Collaborative Filtering',stack:['Python','Scikit-learn','Pandas','Surprise']},{lvl:2,name:'كشف الاحتيال',desc:'Anomaly Detection',stack:['Python','XGBoost','SMOTE','MLflow']},{lvl:3,name:'Fine-tuning LLM',desc:'تدريب نموذج لغة على بيانات عربية',stack:['PyTorch','HuggingFace','LoRA','PEFT']},{lvl:3,name:'MLOps Pipeline',desc:'Pipeline كامل من البيانات للنشر',stack:['Airflow','MLflow','FastAPI','Docker','AWS']}]
+},
+
+devops:{title:'DevOps Engineer',pre:'DevOps & Cloud Infrastructure',tag:'أتمتة دورة حياة التطوير والنشر — CI/CD Docker Kubernetes',icon:'🔁',color:'#f97316',
+stats:[{v:'14-20 شهر',k:'مدة التعلم'},{v:'$3K-18K',k:'الراتب/شهر'},{v:'عالي 🔥',k:'الطلب'},{v:'صعب',k:'الصعوبة'}],
+roadmap:[
+  {phase:'1',name:'Linux وسطر الأوامر الاحترافي',desc:'Bash Scripting، File System وPermissions، Process Management، Systemd، Network Commands (netstat, ss, curl)، SSH Config، Vim أساسي. Linux أساس كل DevOps.',dur:'6-8 أسابيع',tech:['Linux','Bash Scripting','SSH','Vim','Systemd','Cron','File Permissions','Networking Commands'],res:['Linux Journey (مجاني)','TLDR Pages','The Linux Command Line Book']},
+  {phase:'2',name:'Git المتقدم وVCS',desc:'Branching Strategies (GitFlow vs Trunk-Based)، Interactive Rebase، Cherry-pick، Bisect، Conventional Commits، Semantic Versioning، GitHub/GitLab Flow.',dur:'2-3 أسابيع',tech:['Git Advanced','GitFlow','Trunk-Based Dev','Semantic Versioning','Conventional Commits','GitHub/GitLab'],res:['Pro Git Book (مجاني)','Atlassian Git Guides']},
+  {phase:'3',name:'Infrastructure as Code',desc:'Terraform لبناء البنية التحتية كأكواد قابلة للإعادة والإصدار. Ansible لإدارة التهيئة على الـ Servers. State Management في Terraform.',dur:'6-8 أسابيع',tech:['Terraform','HCL','Ansible','Packer','Vagrant','State Files','Terraform Modules','Workspaces'],res:['Terraform Docs','Ansible Docs','HashiCorp Learn']},
+  {phase:'4',name:'Docker والحاويات المتقدمة',desc:'Dockerfile البسيط والمحسّن (Multi-stage Builds)، Docker Compose للـ Development، Image Optimization (Layer Caching, Minimal Base)، Docker Hub وPrivate Registries، Security Scanning.',dur:'4-6 أسابيع',tech:['Docker','Dockerfile','Multi-stage','Docker Compose','Docker Hub','Volumes','Networks','Container Security'],res:['Docker Official Docs','Play with Docker','Docker Deep Dive Book']},
+  {phase:'5',name:'Kubernetes المتقدم',desc:'Pods، Deployments، Services، ConfigMaps، Secrets، Ingress، PersistentVolumes، Helm Charts، RBAC، HorizontalPodAutoscaler، NetworkPolicies.',dur:'8-10 أسابيع',tech:['Kubernetes','kubectl','Helm','Ingress','HPA','RBAC','PV/PVC','NetworkPolicy','StatefulSets'],res:['Kubernetes Docs','KodeKloud','Killer.sh (exam prep)']},
+  {phase:'6',name:'CI/CD Pipelines',desc:'GitHub Actions لأكثر الـ Workflows انتشاراً، GitLab CI، Jenkins للـ Enterprise، ArgoCD للـ GitOps. بناء Pipeline شاملة: Test → Build → Scan → Push → Deploy.',dur:'4-6 أسابيع',tech:['GitHub Actions','GitLab CI','Jenkins','ArgoCD','FluxCD','Pipeline Design','DORA Metrics'],res:['GitHub Actions Docs','ArgoCD Docs','Jenkins Docs']},
+  {phase:'7',name:'Monitoring والـ Observability',desc:'Prometheus لجمع Metrics، Grafana للـ Dashboards، ELK Stack (Elasticsearch + Logstash + Kibana) للـ Logs، Jaeger للـ Distributed Tracing. SLOs وSLAs.',dur:'4-5 أسابيع',tech:['Prometheus','Grafana','ELK Stack','Jaeger','AlertManager','SLOs/SLIs','OpenTelemetry'],res:['Prometheus Docs','Grafana Docs','OpenTelemetry Docs']},
+  {phase:'8',name:'Cloud Platform متعمق',desc:'اختر AWS أو Azure أو GCP. تعلم Core Services: Compute، Storage، Managed K8s (EKS/AKS/GKE)، IAM، VPC، Serverless (Lambda/Cloud Functions)، CDN.',dur:'8-10 أسابيع',tech:['AWS/Azure/GCP','EKS/AKS/GKE','IAM Policies','VPC Design','Lambda','CloudWatch/Azure Monitor','Cost Optimization'],res:['A Cloud Guru','AWS Docs','Cloud Resume Challenge (مجاني)']},
+],
+skills:[{icon:'🐳',n:'Docker',p:92},{icon:'⚓',n:'Kubernetes',p:88},{icon:'🔧',n:'Terraform',p:85},{icon:'⚙️',n:'Ansible',p:80},{icon:'🔄',n:'CI/CD (GitHub Actions)',p:88},{icon:'📊',n:'Prometheus + Grafana',p:80},{icon:'☁️',n:'AWS / Cloud',p:82},{icon:'🐧',n:'Linux / Bash',p:90},{icon:'🔀',n:'Git Advanced',p:85},{icon:'🛡️',n:'DevSecOps',p:72}],
+jobs:[{role:'Junior DevOps Engineer',desc:'صيانة Pipelines ودعم الفرق',min:3000,max:6000},{role:'DevOps / Platform Engineer',desc:'بناء وتطوير البنية التحتية',min:6000,max:13000},{role:'SRE (Site Reliability)',desc:'ضمان الاستقرار وحل مشاكل Scale',min:8000,max:18000},{role:'Cloud Architect',desc:'تصميم بنى سحابية للشركات',min:12000,max:25000}],
+resources:[{emo:'📺',type:'يوتيوب',name:'TechWorld with Nana',desc:'أفضل محتوى DevOps من الصفر بالإنجليزية',free:true},{emo:'🎓',type:'كورس',name:'KodeKloud',desc:'مسارات DevOps تفاعلية مع Labs',free:false},{emo:'📺',type:'يوتيوب',name:'NetworkChuck',desc:'Linux وNetworking وCloud بطريقة ممتعة',free:true},{emo:'🏗️',type:'مشروع',name:'Cloud Resume Challenge',desc:'مشروع عملي مجاني لتعلم AWS',free:true}],
+certs:[{badge:'🥇',name:'CKA - Certified K8s Admin',org:'CNCF',tags:['الأقوى','قيمة عالية جداً']},{badge:'🏅',name:'AWS DevOps Engineer Professional',org:'Amazon AWS',tags:['معترف دولياً','متقدم']},{badge:'🏅',name:'HashiCorp Terraform Associate',org:'HashiCorp',tags:['IaC معترف','متوسط']}],
+projects:[{lvl:1,name:'Docker Compose App',desc:'تطبيق متعدد الـ Services بـ Compose',stack:['Docker','Compose','Nginx','Node.js']},{lvl:2,name:'CI/CD Pipeline كاملة',desc:'GitHub Actions من Code إلى Deploy',stack:['GitHub Actions','Docker','AWS EC2','Tests']},{lvl:2,name:'Infrastructure بـ Terraform',desc:'VPC وEC2 وRDS بالكامل كـ Code',stack:['Terraform','AWS','S3 Backend']},{lvl:3,name:'K8s Production Cluster',desc:'Cluster احترافي بـ Monitoring وAuto-scale',stack:['Kubernetes','Helm','Prometheus','Grafana','ArgoCD']}]
+},
+
+pentest:{title:'Penetration Tester',pre:'Cybersecurity — Offensive Security',tag:'اكتشاف الثغرات الأمنية قبل أن يجدها المهاجمون',icon:'💀',color:'#ef4444',
+stats:[{v:'14-20 شهر',k:'مدة التعلم'},{v:'$2.5K-20K',k:'الراتب/شهر'},{v:'رواتب ضخمة 🔥',k:'الميزة'},{v:'صعب جداً',k:'الصعوبة'}],
+roadmap:[
+  {phase:'1',name:'أساسيات الشبكات للاختراق',desc:'OSI Model كاملاً، TCP/IP Subnetting، كيف يعمل DNS وHTTP وHTTPS بعمق، Packet Capture بـ Wireshark، Network Scanning بـ Nmap.',dur:'6-8 أسابيع',tech:['TCP/IP','OSI Model','DNS','HTTP/HTTPS','Wireshark','Nmap','Subnetting','Firewalls'],res:['CompTIA Network+ Guide','Professor Messer YouTube','Wireshark Docs']},
+  {phase:'2',name:'Linux والأدوات الاحترافية',desc:'Kali Linux كبيئة عمل، Terminal احترافي، Bash Scripting للأتمتة، إدارة الأدوات، Python للـ Scripting، Virtual Machines للتدريب الآمن.',dur:'4-6 أسابيع',tech:['Kali Linux','Bash','Python','VMs','Networking Tools','File Permissions','SSH Tunneling'],res:['Kali Docs','OffSec Training','Linux Journey']},
+  {phase:'3',name:'التشفير والبروتوكولات',desc:'Symmetric وAsymmetric Encryption، Hash Functions، PKI وCertificates، TLS/SSL Handshake، كيف تعمل HTTPS من الداخل، Password Hashing.',dur:'3-4 أسابيع',tech:['AES','RSA','SHA','PKI','TLS/SSL','Digital Signatures','Certificates','Hashing'],res:['Crypto 101 (مجاني)','OpenSSL Docs']},
+  {phase:'4',name:'Web Application Security',desc:'OWASP Top 10 بتفصيل كامل: SQL Injection، XSS (Reflected/Stored/DOM)، CSRF، IDOR، SSRF، XXE، Broken Auth، Insecure Deserialization. Burp Suite كأداة رئيسية.',dur:'8-10 أسابيع',tech:['OWASP Top 10','SQL Injection','XSS','CSRF','IDOR','SSRF','Burp Suite','OWASP ZAP'],res:['PortSwigger Web Academy (مجاني 100%)','OWASP Testing Guide','TryHackMe Web Rooms']},
+  {phase:'5',name:'Network Penetration Testing',desc:'Methodology كاملة: Reconnaissance (OSINT, Google Dorks)، Scanning، Enumeration، Exploitation بـ Metasploit، Post-Exploitation، Persistence، Lateral Movement.',dur:'8-10 أسابيع',tech:['Metasploit','Nmap','Nikto','SQLmap','Responder','Impacket','PowerShell Empire','BloodHound'],res:['TryHackMe','HackTheBox','TCM Security']},
+  {phase:'6',name:'Active Directory وWindows Hacking',desc:'كيف يعمل Active Directory، Kerberoasting، Pass-the-Hash، DCSync، Golden/Silver Tickets، Privilege Escalation في Windows وLinux.',dur:'6-8 أسابيع',tech:['Active Directory','BloodHound','Mimikatz','Kerberoasting','Pass-the-Hash','PowerShell','LOLBAS'],res:['TryHackMe AD Rooms','SpecterOps Blog','TCM Security AD Course']},
+  {phase:'7',name:'Bug Bounty والتقارير',desc:'الانضمام لبرامج Bug Bounty على HackerOne وBugcrowd، منهجية البحث عن الثغرات، كتابة تقارير احترافية بـ CVSS Scoring.',dur:'3-4 أسابيع',tech:['Bug Bounty Methodology','HackerOne','Bugcrowd','CVSS Scoring','Report Writing','Responsible Disclosure'],res:['HackerOne Hacktivity','Nahamsec YouTube','Intigriti Blog']},
+  {phase:'8',name:'التخصص والشهادات',desc:'OSCP هي شهادة الاختراق الذهبية — تطلب Lab Environment واختبار 24 ساعة. CEH وeJPT للمبتدئين. تخصص في: Web، Network، Mobile، أو Cloud Hacking.',dur:'مستمر',tech:['OSCP Prep','PWK Labs','CEH','eJPT','GPEN','Red Team Ops','Report Writing'],res:['OffSec Courses','TCM Security Practical Courses']},
+],
+skills:[{icon:'💣',n:'Metasploit',p:85},{icon:'🔍',n:'Burp Suite',p:90},{icon:'🐧',n:'Kali Linux',p:92},{icon:'🌐',n:'Web App Testing',p:88},{icon:'🔑',n:'Active Directory',p:78},{icon:'🐍',n:'Python Scripting',p:75},{icon:'📋',n:'Report Writing',p:82},{icon:'🔎',n:'OSINT',p:80}],
+jobs:[{role:'Junior Pen Tester',desc:'اختبار تطبيقات وأنظمة بسيطة',min:2500,max:5000},{role:'Senior Pen Tester',desc:'Red Team Operations وتقارير شاملة',min:6000,max:15000},{role:'Security Consultant',desc:'استشارات أمن للشركات الكبيرة',min:8000,max:25000},{role:'Red Team Lead',desc:'قيادة فرق الاختراق الكاملة',min:12000,max:30000}],
+resources:[{emo:'🎮',type:'منصة تدريب',name:'TryHackMe',desc:'أفضل بيئة تعليمية للمبتدئين في الأمن',free:false},{emo:'🎮',type:'تحديات متقدمة',name:'HackTheBox',desc:'تحديات حقيقية للمحترفين',free:false},{emo:'📺',type:'يوتيوب',name:'TCM Security',desc:'دورات Pentest عملية ومجانية جزئياً',free:true},{emo:'🌐',type:'مجاني 100%',name:'PortSwigger Academy',desc:'أفضل تدريب مجاني لأمن الويب',free:true}],
+certs:[{badge:'🥇',name:'OSCP',org:'Offensive Security',tags:['الأعلى قيمة','متقدم جداً','24 ساعة exam']},{badge:'🏅',name:'CEH',org:'EC-Council',tags:['معترف دولياً','متوسط']},{badge:'🏅',name:'eJPT',org:'eLearnSecurity',tags:['مبتدئ','سهل التحضير','رخيص']}],
+projects:[{lvl:1,name:'CTF Challenges',desc:'حل تحديات TryHackMe',stack:['Kali Linux','Nmap','Metasploit']},{lvl:2,name:'Home Lab AD',desc:'بيئة AD للتدريب على الاختراق',stack:['Windows Server','AD DS','BloodHound']},{lvl:3,name:'Bug Bounty Report',desc:'اكتشاف وتوثيق ثغرة حقيقية',stack:['Burp Suite','CVSS','Write-up']}]
+},
+};
+
+// Add placeholder data for missing keys
+['fullstack','reactnative','flutter','native','nlp','cv','genai','datascience','dataeng','bi','soc','appsec','cloud','gamedev','blockchain','embedded','uiux','qa','dba'].forEach(key => {
+  if (!MODALS[key]) {
+    const placeholders = {
+      fullstack:{title:'Full Stack Developer',pre:'Web Development',tag:'الجمع بين Frontend وBackend في مسار متكامل',icon:'🔥',color:'#9d6fff'},
+      reactnative:{title:'React Native Developer',pre:'Mobile Development',tag:'iOS وAndroid من JavaScript واحد',icon:'⚛️',color:'#ff9354'},
+      flutter:{title:'Flutter Developer',pre:'Mobile Development',tag:'Dart وFlutter من Google لكل المنصات',icon:'🦋',color:'#06d6a0'},
+      native:{title:'Native iOS/Android Dev',pre:'Mobile Development',tag:'Swift لـ iOS وKotlin لـ Android',icon:'🍎',color:'#ff6bbd'},
+      nlp:{title:'NLP Engineer',pre:'AI & Machine Learning',tag:'معالجة اللغات الطبيعية والـ Transformers',icon:'💬',color:'#e879f9'},
+      cv:{title:'Computer Vision Engineer',pre:'AI & Machine Learning',tag:'تعليم الآلة رؤية وتحليل الصور',icon:'👁️',color:'#34d399'},
+      genai:{title:'GenAI & LLM Engineer',pre:'Generative AI',tag:'بناء تطبيقات فوق نماذج اللغة الكبيرة',icon:'✨',color:'#fb923c'},
+      datascience:{title:'Data Scientist',pre:'Data Science',tag:'استخراج الأنماط والرؤى من البيانات',icon:'📊',color:'#0ea5e9'},
+      dataeng:{title:'Data Engineer',pre:'Data Engineering',tag:'بناء خطوط أنابيب البيانات الضخمة',icon:'🔧',color:'#10b981'},
+      bi:{title:'BI / Data Analyst',pre:'Business Intelligence',tag:'Power BI وTableau وDashboards',icon:'📈',color:'#f43f5e'},
+      soc:{title:'SOC Analyst / Blue Team',pre:'Cybersecurity Defense',tag:'مراقبة التهديدات والاستجابة للحوادث',icon:'🛡️',color:'#f97316'},
+      appsec:{title:'Application Security Engineer',pre:'AppSec & DevSecOps',tag:'أمان التطبيقات من الكود للإنتاج',icon:'🔒',color:'#dc2626'},
+      cloud:{title:'Cloud Architect',pre:'Cloud Computing',tag:'AWS · Azure · GCP · Serverless',icon:'☁️',color:'#60a5fa'},
+      gamedev:{title:'Game Developer',pre:'Game Development',tag:'Unity · Unreal · 2D/3D · VR',icon:'🎮',color:'#ec4899'},
+      blockchain:{title:'Blockchain / Web3 Dev',pre:'Blockchain & DeFi',tag:'Solidity · Smart Contracts · DeFi',icon:'⛓️',color:'#eab308'},
+      embedded:{title:'Embedded & IoT Dev',pre:'Embedded Systems',tag:'C/C++ · RTOS · Microcontrollers',icon:'🔌',color:'#84cc16'},
+      uiux:{title:'UI/UX Designer',pre:'Design & UX',tag:'Figma · Design Systems · User Research',icon:'🎭',color:'#a78bfa'},
+      qa:{title:'QA / Test Engineer',pre:'Quality Assurance',tag:'Automation · Selenium · Cypress · K6',icon:'🧪',color:'#2dd4bf'},
+      dba:{title:'Database Administrator',pre:'Database Management',tag:'PostgreSQL · MongoDB · Performance',icon:'🗄️',color:'#fb7185'},
+    };
+    const p = placeholders[key];
+    MODALS[key] = {
+      ...p,
+      stats:[{v:'يعتمد على المسار',k:'مدة التعلم'},{v:'متنوع',k:'الراتب'},{v:'جيد',k:'الطلب'},{v:'متوسط',k:'الصعوبة'}],
+      roadmap:[{phase:'ملاحظة',name:'محتوى قادم',desc:`روادماب ${p.title} الكامل سيكون متاحاً قريباً. للحصول على أفضل تجربة، استكشف التخصصات الأخرى أو ابحث عن "${p.title} roadmap" على roadmap.sh`,dur:'-',tech:[],res:['roadmap.sh']}],
+      skills:[{icon:p.icon,n:p.title,p:80}],
+      jobs:[{role:p.title,desc:'وصف وظيفي قادم',min:2000,max:15000}],
+      resources:[{emo:'🌐',type:'خارجي',name:'roadmap.sh',desc:`ابحث عن ${p.title} على موقع roadmap.sh`,free:true}],
+      certs:[{badge:'🏅',name:'شهادات قادمة',org:'متعدد',tags:['قريباً']}],
+      projects:[{lvl:1,name:'مشاريع قادمة',desc:'قائمة المشاريع ستضاف قريباً',stack:[]}]
+    };
+  }
+});
+
+// ===================================
+// MODAL LOGIC
+// ===================================
+let activeKey = null, activeTab = 'roadmap';
+
+function openModal(key) {
+  const d = MODALS[key];
+  if (!d) return;
+  activeKey = key;
+  const hexToRgba = (hex, a) => {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  };
+  const c = d.color;
+
+  // Set CSS vars
+  document.getElementById('modal').style.setProperty('--m-color', c);
+  document.getElementById('modal').style.setProperty('--m-bg', hexToRgba(c, 0.1));
+  document.getElementById('modal').style.setProperty('--m-border', hexToRgba(c, 0.25));
+  document.getElementById('modal').style.setProperty('--m-glow', hexToRgba(c, 0.25));
+
+  document.getElementById('mHeroBg').style.background = `linear-gradient(135deg, ${c}, ${hexToRgba(c,0)})`;
+  document.getElementById('mIcon').textContent = d.icon;
+  document.getElementById('mIcon').style.background = hexToRgba(c, 0.1);
+  document.getElementById('mIcon').style.border = `1px solid ${hexToRgba(c, 0.3)}`;
+  document.getElementById('mPre').textContent = d.pre;
+  document.getElementById('mTitle').textContent = d.title;
+  document.getElementById('mTag').textContent = d.tag;
+
+  document.getElementById('mStats').innerHTML = d.stats.map(s => `
+    <div class="mqs-item"><span class="mqs-val">${s.v}</span><span class="mqs-key">${s.k}</span></div>
+  `).join('');
+
+  const tabs = [
+    {id:'roadmap',label:'🗺️ الروادماب'},
+    {id:'skills',label:'🛠️ المهارات'},
+    {id:'salary',label:'💰 الرواتب'},
+    {id:'resources',label:'📚 المصادر'},
+    {id:'certs',label:'🏆 الشهادات'},
+    {id:'projects',label:'🔨 مشاريع'},
+  ];
+  document.getElementById('mTabs').innerHTML = tabs.map(t =>
+    `<div class="mtab${t.id==='roadmap'?' on':''}" onclick="switchTab('${t.id}',this)">${t.label}</div>`
+  ).join('');
+
+  switchTab('roadmap', null, true);
+  document.getElementById('modalBg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function switchTab(tab, el, init=false) {
+  activeTab = tab;
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('on'));
+  if (el) el.classList.add('on');
+  else {
+    const tabs = document.querySelectorAll('.mtab');
+    const tabNames = ['roadmap','skills','salary','resources','certs','projects'];
+    const idx = tabNames.indexOf(tab);
+    if (tabs[idx]) tabs[idx].classList.add('on');
+  }
+  renderTab();
+}
+
+function renderTab() {
+  const d = MODALS[activeKey];
+  if (!d) return;
+  const el = document.getElementById('mBody');
+
+  if (activeTab === 'roadmap') {
+    el.innerHTML = `<div class="roadmap-container"><div class="rm-track"></div>${
+      d.roadmap.map((s,i) => `
+        <div class="rm-item" style="animation-delay:${i*0.08}s">
+          <div class="rm-dot"></div>
+          <div class="rm-box">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div class="rm-phase">${s.phase}</div>
+              ${s.dur?`<span class="rm-duration">⏱ ${s.dur}</span>`:''}
+            </div>
+            <div class="rm-name">${s.name}</div>
+            <div class="rm-desc">${s.desc}</div>
+            ${s.tech.length?`<div class="rm-pills">${s.tech.map(t=>`<span class="rm-pill">${t}</span>`).join('')}</div>`:''}
+            ${s.res&&s.res.length?`<div class="rm-links">${s.res.map(r=>`<span class="rm-link">📖 ${r}</span>`).join('')}</div>`:''}
+          </div>
+        </div>
+      `).join('')
+    }</div>`;
+  }
+  else if (activeTab === 'skills') {
+    el.innerHTML = `<div class="skills-wrap">${d.skills.map(s=>`
+      <div class="skill-box">
+        <span class="skill-icon">${s.icon}</span>
+        <div class="skill-info">
+          <div class="skill-name">${s.n}</div>
+          <div class="skill-bar"><div class="skill-fill" style="width:0%" data-pct="${s.p}"></div></div>
+          <div class="skill-pct">${s.p}%</div>
+        </div>
+      </div>
+    `).join('')}</div>`;
+    setTimeout(() => {
+      el.querySelectorAll('.skill-fill').forEach(f => { f.style.width = f.dataset.pct + '%'; });
+    }, 50);
+  }
+  else if (activeTab === 'salary') {
+    const max = Math.max(...d.jobs.map(j=>j.max));
+    el.innerHTML = `
+      <div class="salary-chart-wrap">
+        ${d.jobs.map(j=>`
+          <div class="salary-bar-item">
+            <div class="salary-bar-head">
+              <span class="salary-role">${j.role}</span>
+              <span class="salary-range">$${j.min.toLocaleString()}–$${j.max.toLocaleString()}/شهر</span>
+            </div>
+            <div class="salary-track"><div class="salary-fill" style="width:0%" data-pct="${(j.max/max*100).toFixed(0)}"></div></div>
+            <div style="font-size:0.72rem;color:var(--text3);margin-top:4px">${j.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="salary-note">💡 الأرقام تقديرية تعتمد على السوق العالمي (Upwork, LinkedIn, Glassdoor). الأسواق العربية والمحلية قد تختلف. مع الخبرة والمهارات القوية يمكن تجاوز هذه الأرقام.</div>
+    `;
+    setTimeout(() => {
+      el.querySelectorAll('.salary-fill').forEach(f => { f.style.width = f.dataset.pct + '%'; });
+    }, 50);
+  }
+  else if (activeTab === 'resources') {
+    el.innerHTML = `<div class="res-grid">${d.resources.map(r=>`
+      <div class="res-row">
+        <span class="res-emo">${r.emo}</span>
+        <div class="res-info">
+          <div class="res-type">${r.type}</div>
+          <div class="res-name">${r.name}</div>
+          <div class="res-desc">${r.desc}</div>
+        </div>
+        <span class="res-badge ${r.free?'rb-free':'rb-paid'}">${r.free?'مجاني':'مدفوع'}</span>
+      </div>
+    `).join('')}</div>`;
+  }
+  else if (activeTab === 'certs') {
+    el.innerHTML = `<div class="certs-grid">${d.certs.map(c=>`
+      <div class="cert-box">
+        <div class="cert-emo">${c.badge}</div>
+        <div>
+          <div class="cert-name">${c.name}</div>
+          <div class="cert-org">${c.org}</div>
+          <div class="cert-tags">${c.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    `).join('')}</div>`;
+  }
+  else if (activeTab === 'projects') {
+    el.innerHTML = `
+      <div style="margin-bottom:16px;font-size:0.8rem;color:var(--text3)">🟢 مبتدئ &nbsp;🟡 متوسط &nbsp;🔴 متقدم</div>
+      <div class="projects-grid">${d.projects.map(p=>`
+        <div class="proj-box">
+          <span class="proj-level pl-${p.lvl}">${p.lvl===1?'🟢 مبتدئ':p.lvl===2?'🟡 متوسط':'🔴 متقدم'}</span>
+          <div class="proj-name">${p.name}</div>
+          <div class="proj-desc">${p.desc}</div>
+          <div class="proj-stack">${(p.stack||[]).map(s=>`<span class="pstack">${s}</span>`).join('')}</div>
+        </div>
+      `).join('')}</div>
+    `;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeIfOut(e) { if (e.target === document.getElementById('modalBg')) closeModal(); }
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+// ===================================
 // CARD ANIMATIONS
-document.querySelectorAll('.catcard').forEach((c,i)=>{c.style.animationDelay=(i*.07)+'s'});
+// ===================================
+document.querySelectorAll('.track-card').forEach((c,i) => {
+  c.style.animationDelay = (i * 0.06) + 's';
+});
+
+// IntersectionObserver for cards
+const cardObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+    }
+  });
+}, {threshold: 0.1});
+
 </script>
 </body>
 </html>
