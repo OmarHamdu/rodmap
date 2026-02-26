@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار التخصص — CodePath</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020509;--s1:#07101f;--s2:#0c1a2e;--s3:#111f38;--b1:rgba(255,255,255,0.05);--b2:rgba(255,255,255,0.09);--b3:rgba(255,255,255,0.14);--cyan:#00f5d4;--blue:#38b6ff;--purple:#a259ff;--pink:#ff5fa0;--orange:#ff8c42;--yellow:#ffd166;--green:#3ddc97;--red:#ff4d6d;--t1:#e8f0fe;--t2:#8fa3b8;--t3:#3d5a73;--r:16px;--rl:24px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:'Cairo',sans-serif;cursor:none;overflow-x:hidden;min-height:100vh}
+#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+#cur2{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,245,212,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s,top .12s}
+#bgc{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+.bgrid{position:fixed;inset:0;z-index:1;background-image:linear-gradient(rgba(0,245,212,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,212,.02) 1px,transparent 1px);background-size:70px 70px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+nav{position:fixed;top:0;inset-inline:0;z-index:500;height:64px;background:rgba(2,5,9,.88);backdrop-filter:blur(22px);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nlogo{width:34px;height:34px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:900;color:#000;font-family:'Fira Code',monospace}
+.nname{font-family:'Fira Code',monospace;font-size:1rem;color:var(--cyan)}
+.nback{padding:8px 18px;border-radius:50px;font-size:.8rem;cursor:pointer;font-family:'Cairo',sans-serif;background:var(--s2);border:1px solid var(--b2);color:var(--t2);transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.nback:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* QUIZ WRAPPER */
+.qwrap{position:relative;z-index:10;max-width:860px;margin:0 auto;padding:90px 24px 100px;min-height:100vh;display:flex;flex-direction:column}
+
+/* PROGRESS */
+.qprog-wrap{margin-bottom:36px;animation:fadeUp .5s ease backwards}
+.qprog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.qprog-label{font-family:'Fira Code',monospace;font-size:.75rem;color:var(--t3)}
+.qprog-val{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--cyan)}
+.qprog-track{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;border:1px solid var(--b1)}
+.qprog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:3px;transition:width .5s ease}
+
+/* QUESTION CARD */
+.qcard{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rl);padding:36px;margin-bottom:28px;animation:fadeUp .5s ease backwards;position:relative;overflow:hidden}
+.qcard::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink))}
+.qcat-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,245,212,.07);border:1px solid rgba(0,245,212,.18);border-radius:50px;padding:5px 16px;font-size:.72rem;color:var(--cyan);font-family:'Fira Code',monospace;margin-bottom:20px;letter-spacing:.5px}
+.qnum{font-family:'Tajawal',sans-serif;font-size:.85rem;color:var(--t3);margin-bottom:10px;font-weight:700}
+.qtext{font-family:'Tajawal',sans-serif;font-size:1.5rem;font-weight:800;line-height:1.4;color:#fff}
+
+/* OPTIONS */
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;animation:fadeUp .5s .1s ease backwards}
+.qopt{background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);padding:16px 20px;cursor:pointer;transition:all .25s;display:flex;align-items:flex-start;gap:12px;text-align:right}
+.qopt:hover{border-color:var(--cyan);background:rgba(0,245,212,.06);transform:translateY(-2px)}
+.qopt.sel{border-color:var(--cyan);background:rgba(0,245,212,.1);box-shadow:0 0 20px rgba(0,245,212,.1)}
+.qopt.wrong{border-color:var(--red);background:rgba(255,77,109,.08)}
+.onum{width:28px;height:28px;border-radius:8px;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-family:'Fira Code',monospace;color:var(--t3);flex-shrink:0;transition:all .25s}
+.qopt.sel .onum{background:var(--cyan);color:#000;border-color:var(--cyan)}
+.otxt{flex:1}
+.otitle{font-size:.92rem;font-weight:700;margin-bottom:3px;color:var(--t1)}
+.osub{font-size:.75rem;color:var(--t3);line-height:1.5}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV BUTTONS */
+.qnav{display:flex;align-items:center;justify-content:space-between;animation:fadeUp .5s .15s ease backwards}
+.qnav-hint{font-size:.75rem;color:var(--t3)}
+.qbtn-next{padding:12px 30px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;border:none;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;transition:all .25s;box-shadow:0 4px 20px rgba(0,245,212,.25);opacity:.4;pointer-events:none}
+.qbtn-next.ready{opacity:1;pointer-events:all}
+.qbtn-next.ready:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,245,212,.4)}
+
+/* INTRO */
+.qintro{text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeUp .6s ease backwards}
+.qi-icon{font-size:4rem;margin-bottom:20px;display:block}
+.qi-title{font-family:'Tajawal',sans-serif;font-size:2.2rem;font-weight:900;margin-bottom:14px}
+.qi-grad{background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.qi-desc{font-size:.95rem;color:var(--t2);line-height:1.9;max-width:580px;margin-bottom:32px}
+.qi-features{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin-bottom:36px;text-align:right}
+.qi-feat{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--t2)}
+.qi-feat span{font-size:1.2rem}
+.qi-start{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;padding:15px 40px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 28px rgba(0,245,212,.3);transition:all .3s}
+.qi-start:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(0,245,212,.45)}
+
+/* RESULT */
+.qresult{display:none;animation:fadeUp .6s ease backwards;text-align:center}
+.qresult.show{display:block}
+.qr-header{background:linear-gradient(135deg,rgba(0,245,212,.06),rgba(162,89,255,.06));border:1px solid rgba(0,245,212,.18);border-radius:var(--rl);padding:40px;margin-bottom:28px;position:relative;overflow:hidden}
+.qr-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.qr-main-icon{font-size:3.5rem;display:block;margin-bottom:16px;animation:bounce .6s ease}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.qr-label{font-family:'Fira Code',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.qr-title{font-family:'Tajawal',sans-serif;font-size:2rem;font-weight:900;margin-bottom:10px}
+.qr-desc{font-size:.9rem;color:var(--t2);line-height:1.8;max-width:500px;margin:0 auto 24px}
+.qr-scores{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:28px}
+.qr-score-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px 18px;font-size:.8rem}
+.qr-score-name{color:var(--t2);margin-bottom:4px}
+.qr-score-bar{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.qr-score-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:2px}
+.qr-score-pct{font-size:.7rem;color:var(--cyan);font-family:'Fira Code',monospace}
+
+/* TOP RECOMMENDATIONS */
+.qr-recs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;text-align:right}
+.qr-rec{background:var(--s1);border:1.5px solid var(--b1);border-radius:var(--rl);padding:20px;transition:all .3s;cursor:pointer;text-decoration:none;display:block;color:inherit}
+.qr-rec:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.qr-rec.top{border-color:rgba(0,245,212,.3);background:rgba(0,245,212,.04)}
+.qr-rec-badge{display:inline-block;font-size:.65rem;padding:3px 10px;border-radius:20px;margin-bottom:10px;font-family:'Fira Code',monospace}
+.badge-top{background:rgba(0,245,212,.12);border:1px solid rgba(0,245,212,.25);color:var(--cyan)}
+.badge-alt{background:rgba(162,89,255,.1);border:1px solid rgba(162,89,255,.2);color:var(--purple)}
+.qr-rec-ico{font-size:2rem;margin-bottom:10px;display:block}
+.qr-rec-title{font-family:'Tajawal',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:5px}
+.qr-rec-sub{font-size:.78rem;color:var(--t2);line-height:1.6;margin-bottom:10px}
+.qr-rec-stats{display:flex;gap:10px;flex-wrap:wrap}
+.qr-rec-stat{font-size:.68rem;color:var(--t3);font-family:'Fira Code',monospace}
+
+.qr-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.qrbtn{padding:12px 28px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.qrbtn-p{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;box-shadow:0 4px 22px rgba(0,245,212,.3)}
+.qrbtn-p:hover{transform:translateY(-2px);box-shadow:0 7px 30px rgba(0,245,212,.4)}
+.qrbtn-s{background:var(--s2);border:1px solid var(--b2);color:var(--t2)}
+.qrbtn-s:hover{border-color:var(--purple);color:var(--purple)}
+
+/* Personality traits */
+.qr-traits{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.trait-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:14px;text-align:center}
+.trait-icon{font-size:1.5rem;display:block;margin-bottom:6px}
+.trait-name{font-size:.78rem;font-weight:700;margin-bottom:3px}
+.trait-val{font-size:.68rem;color:var(--t3);font-family:'Fira Code',monospace}
+
+footer{position:relative;z-index:10;border-top:1px solid var(--b1);padding:32px;text-align:center;background:var(--s1)}
+.fdev{font-size:.8rem;color:var(--t2);margin-bottom:3px}
+.fcopy{font-size:.7rem;color:var(--t3)}
+
+@media(max-width:700px){
+  .qopts{grid-template-columns:1fr}
+  .qi-features{grid-template-columns:1fr}
+  .qr-recs{grid-template-columns:1fr}
+  .qr-traits{grid-template-columns:1fr 1fr}
+  body{cursor:auto}
+  #cur,#cur2{display:none}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur2"></div>
+<canvas id="bgc"></canvas>
+<div class="bgrid"></div>
+
+<nav>
+  <a href="index.html" class="nbrand">
+    <div class="nlogo">&lt;/&gt;</div>
+    <span class="nname">CodePath</span>
+  </a>
+  <a href="index.html" class="nback">← العودة للرئيسية</a>
+</nav>
+
+<div class="qwrap" id="qwrap">
+
+  <!-- INTRO -->
+  <div class="qintro" id="qintro">
+    <span class="qi-icon">🧭</span>
+    <h1 class="qi-title">اختبار <span class="qi-grad">التخصص الشامل</span></h1>
+    <p class="qi-desc">اختبار مدروس يحلل شخصيتك وطريقة تفكيرك واهتماماتك وأهدافك الوظيفية لتحديد التخصص البرمجي الأنسب لك من بين 20+ مسار</p>
+    <div class="qi-features">
+      <div class="qi-feat"><span>❓</span>10 أسئلة شاملة</div>
+      <div class="qi-feat"><span>⚡</span>نتيجة فورية دقيقة</div>
+      <div class="qi-feat"><span>🎯</span>توصيتان مخصصتان</div>
+      <div class="qi-feat"><span>📊</span>تحليل نقاط قوتك</div>
+      <div class="qi-feat"><span>🗺️</span>روادماب مباشر</div>
+      <div class="qi-feat"><span>🔄</span>إعادة الاختبار متاحة</div>
+    </div>
+    <button class="qi-start" onclick="startQuiz()">ابدأ الاختبار الآن ←</button>
+  </div>
+
+  <!-- QUESTIONS (hidden initially) -->
+  <div id="qmain" style="display:none">
+    <div class="qprog-wrap">
+      <div class="qprog-top">
+        <span class="qprog-label" id="progLabel">السؤال 1 من 10</span>
+        <span class="qprog-val" id="progPct">0%</span>
+      </div>
+      <div class="qprog-track"><div class="qprog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <div class="qcard" id="qcard">
+      <div class="qcat-badge" id="qcatBadge">📋 فئة السؤال</div>
+      <div class="qnum" id="qnum">السؤال 1</div>
+      <div class="qtext" id="qtext">نص السؤال</div>
+    </div>
+    <div class="qopts" id="qopts"></div>
+    <div class="qnav">
+      <span class="qnav-hint" id="qhint">اختر إجابة للمتابعة</span>
+      <button class="qbtn-next" id="qnextbtn" onclick="nextQ()">التالي ←</button>
+    </div>
+  </div>
+
+  <!-- RESULT (hidden initially) -->
+  <div class="qresult" id="qresult"></div>
+
+</div>
+
+<footer>
+  <div class="fdev">🛠️ تم التطوير بواسطة Eng. Omar Hamdi</div>
+  <div class="fcopy">© 2025 CodePath — جميع الحقوق محفوظة</div>
+</footer>
+
+<script>
+// PARTICLES
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=[];for(let i=0;i<80;i++)pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,s:Math.random()*1.3+.3,a:Math.random()*.3+.07,c:['#00f5d4','#38b6ff','#a259ff','#ff5fa0'][Math.floor(Math.random()*4)]});
+function ani(){cv.clearRect(0,0,cv.width,cv.height);pts.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;for(let j=i+1;j<pts.length;j++){const d=Math.hypot(p.x-pts[j].x,p.y-pts[j].y);if(d<100){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,245,212,${.03*(1-d/100)})`;cx.lineWidth=.5;cx.stroke()}}cx.beginPath();cx.arc(p.x,p.y,p.s,0,Math.PI*2);cx.fillStyle=p.c;cx.globalAlpha=p.a;cx.fill();cx.globalAlpha=1});requestAnimationFrame(ani)}ani();
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';setTimeout(()=>{cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px'},80)});
+
+// ==========================================
+// QUIZ DATA — 10 COMPREHENSIVE QUESTIONS
+// ==========================================
+const QUESTIONS = [
+  {
+    cat:'🧠 طريقة التفكير',
+    text:'كيف تفضل حل المشاكل؟',
+    opts:[
+      {t:'بشكل منطقي وتحليلي — أفكك المشكلة إلى أجزاء صغيرة',s:'تحليلي',scores:{backend:3,ml:3,dataeng:2,devops:2,pentest:2}},
+      {t:'بشكل إبداعي وبصري — أفكر في التصميم والجمال',s:'إبداعي',scores:{frontend:3,uiux:3,gamedev:2}},
+      {t:'بشكل استراتيجي — أرى الصورة الكبيرة وأضع خطة',s:'استراتيجي',scores:{cloud:3,devops:2,datascience:2,fullstack:2}},
+      {t:'بشكل تجريبي — أجرب وأخطئ وأتعلم من التجربة',s:'تجريبي',scores:{ml:2,genai:2,gamedev:2,embedded:2}},
+    ]
+  },
+  {
+    cat:'💡 مجال الشغف',
+    text:'أيهما يُثير اهتمامك أكثر؟',
+    opts:[
+      {t:'بناء تطبيقات وخدمات يستخدمها الناس يومياً',s:'تطبيقي',scores:{frontend:2,backend:3,fullstack:3,reactnative:2,flutter:2}},
+      {t:'الأرقام والبيانات والأنماط الخفية فيها',s:'بيانات',scores:{datascience:3,dataeng:3,bi:2,ml:3}},
+      {t:'الأمن والحماية واكتشاف نقاط الضعف',s:'أمني',scores:{pentest:3,soc:3,appsec:2}},
+      {t:'التقنيات المستقبلية والذكاء الاصطناعي',s:'مستقبلي',scores:{ml:3,nlp:3,cv:2,genai:3,blockchain:2}},
+    ]
+  },
+  {
+    cat:'🎯 الهدف الوظيفي',
+    text:'ما الهدف الأساسي الذي تسعى إليه؟',
+    opts:[
+      {t:'راتب مرتفع جداً وأمان وظيفي عالي',s:'مالي',scores:{cloud:3,devops:3,ml:3,dataeng:3,pentest:2}},
+      {t:'العمل على مشاريع مبتكرة وإبداعية مثيرة',s:'إبداعي',scores:{gamedev:3,frontend:2,genai:2,uiux:3,blockchain:2}},
+      {t:'حل مشاكل معقدة وتحديات تقنية صعبة',s:'تحديات',scores:{backend:2,ml:3,pentest:3,embedded:3,nlp:2}},
+      {t:'العمل بحرية كفريلانسر أو إنشاء مشروع خاص',s:'حرية',scores:{frontend:3,uiux:2,fullstack:3,reactnative:2,flutter:2}},
+    ]
+  },
+  {
+    cat:'🔬 أسلوب التعلم',
+    text:'كيف تتعلم أفضل؟',
+    opts:[
+      {t:'بالممارسة — ابنِ مشروعاً وتعلم في الطريق',s:'عملي',scores:{frontend:2,fullstack:2,devops:2,gamedev:2}},
+      {t:'بالنظرية أولاً — افهم الأساس ثم طبّق',s:'نظري',scores:{ml:3,nlp:3,cv:3,datascience:2}},
+      {t:'بالتحدي — حل مسائل ومنافسات',s:'تنافسي',scores:{pentest:2,datascience:2,backend:2,gamedev:2}},
+      {t:'بالمشاهدة والتجريب بالتوازي',s:'مرئي',scores:{frontend:2,uiux:3,bi:2,flutter:2}},
+    ]
+  },
+  {
+    cat:'🖥️ بيئة العمل',
+    text:'أين تجد نفسك تعمل؟',
+    opts:[
+      {t:'أمام الشاشة أصمم واجهات وألوان وأزرار',s:'واجهات',scores:{frontend:3,uiux:3,gamedev:2}},
+      {t:'في Terminal وأوامر السيرفر والـ Logs',s:'سيرفر',scores:{backend:3,devops:3,pentest:2,dba:2}},
+      {t:'في Jupyter Notebook أحلل بيانات ورسوم بيانية',s:'تحليل',scores:{datascience:3,ml:3,bi:3}},
+      {t:'في بيئات تقنية متعددة — لا أتعلق بمكان محدد',s:'متعدد',scores:{fullstack:3,cloud:2,devops:2}},
+    ]
+  },
+  {
+    cat:'⚙️ المهارات الحالية',
+    text:'ما مستواك البرمجي الحالي؟',
+    opts:[
+      {t:'صفر تماماً — لم أكتب كوداً في حياتي',s:'مبتدئ',scores:{frontend:3,uiux:2,bi:2}},
+      {t:'أعرف أساسيات لغة برمجة واحدة',s:'أساسي',scores:{frontend:2,fullstack:2,datascience:1,reactnative:2}},
+      {t:'لدي خبرة في البرمجة وأريد التخصص',s:'متوسط',scores:{backend:2,ml:2,devops:2,pentest:2,dataeng:2}},
+      {t:'مطور بالفعل وأبحث عن تعمق أكثر',s:'متقدم',scores:{ml:3,cloud:3,pentest:3,nlp:3,devops:3}},
+    ]
+  },
+  {
+    cat:'🧩 نوع المشاريع',
+    text:'أي نوع مشاريع يُلهمك أكثر؟',
+    opts:[
+      {t:'تطبيق موبايل يستخدمه الملايين',s:'موبايل',scores:{reactnative:3,flutter:3,native:3}},
+      {t:'نموذج ذكاء اصطناعي يحل مشكلة حقيقية',s:'ai',scores:{ml:3,nlp:3,cv:3,genai:3}},
+      {t:'منصة ويب متكاملة من الصفر حتى الإطلاق',s:'ويب',scores:{fullstack:3,frontend:2,backend:2}},
+      {t:'حماية أنظمة شركة من الهجمات الإلكترونية',s:'أمن',scores:{pentest:3,soc:3,appsec:3}},
+    ]
+  },
+  {
+    cat:'📐 الجانب المفضل',
+    text:'أيهما يعبّر عنك أكثر؟',
+    opts:[
+      {t:'المعادلات والرياضيات تجذبني وتمتعني',s:'رياضي',scores:{ml:3,nlp:3,cv:3,datascience:2,embedded:2}},
+      {t:'الأنظمة والبنية التحتية والـ Scalability',s:'بنية',scores:{devops:3,cloud:3,backend:2,dataeng:2}},
+      {t:'التصميم الجميل وتجربة المستخدم المميزة',s:'تصميم',scores:{uiux:3,frontend:3,gamedev:2}},
+      {t:'الكود النظيف والـ Patterns الصحيحة',s:'جودة',scores:{backend:2,qa:3,appsec:2,fullstack:2}},
+    ]
+  },
+  {
+    cat:'🌍 الصناعة المفضلة',
+    text:'في أي صناعة تريد العمل؟',
+    opts:[
+      {t:'التكنولوجيا والشركات الناشئة (Startups)',s:'تك',scores:{frontend:2,fullstack:2,ml:2,genai:2}},
+      {t:'الأمن والدفاع والحكومة والبنوك',s:'حكومي',scores:{pentest:3,soc:3,appsec:2,cloud:2}},
+      {t:'الألعاب والترفيه والميديا',s:'ترفيه',scores:{gamedev:3,frontend:2,uiux:2}},
+      {t:'الرعاية الصحية، التعليم، الطاقة، الصناعة',s:'تقليدي',scores:{datascience:2,embedded:3,ml:2,bi:2}},
+    ]
+  },
+  {
+    cat:'⚡ التحدي الأكبر',
+    text:'ما التحدي الذي يُثيرك ولا يُخيفك؟',
+    opts:[
+      {t:'جعل صفحة تحمّل في 0.3 ثانية بدل 3 ثوانٍ',s:'أداء',scores:{frontend:2,backend:2,devops:2,fullstack:2}},
+      {t:'تحليل مليار سجل بيانات لإيجاد نمط خفي',s:'بيانات',scores:{datascience:3,dataeng:3,ml:2}},
+      {t:'اختراق نظام مؤمّن أخلاقياً واكتشاف ثغرة',s:'اختراق',scores:{pentest:3,appsec:2,soc:2}},
+      {t:'تدريب نموذج AI يتحدث العربية بطلاقة',s:'ai',scores:{nlp:3,genai:3,ml:2}},
+    ]
+  },
+];
+
+// ==========================================
+// TRACKS MAP
+// ==========================================
+const TRACKS = {
+  frontend:{name:'🎨 Frontend Developer',short:'Frontend',page:'web.html',desc:'بناء واجهات مستخدم جميلة وتفاعلية تشد المستخدم',dur:'8-14 شهر',sal:'$1.5K-12K',lvl:'متوسط'},
+  backend:{name:'⚙️ Backend Developer',short:'Backend',page:'web.html',desc:'بناء APIs وخدمات قوية تدعم الملايين من المستخدمين',dur:'10-16 شهر',sal:'$2K-14K',lvl:'متوسط-صعب'},
+  fullstack:{name:'🔥 Full Stack Developer',short:'Full Stack',page:'web.html',desc:'الجمع بين Frontend وBackend في مسار متكامل',dur:'14-20 شهر',sal:'$2.5K-18K',lvl:'صعب'},
+  reactnative:{name:'⚛️ React Native Dev',short:'React Native',page:'mobile.html',desc:'تطبيقات iOS وAndroid بـ JavaScript واحد',dur:'8-12 شهر',sal:'$2K-13K',lvl:'متوسط'},
+  flutter:{name:'🦋 Flutter Developer',short:'Flutter',page:'mobile.html',desc:'Dart وFlutter لتطبيقات متعددة المنصات',dur:'8-13 شهر',sal:'$2K-12K',lvl:'متوسط'},
+  native:{name:'🍎 Native iOS/Android',short:'Native Mobile',page:'mobile.html',desc:'Swift وKotlin لأفضل أداء',dur:'12-18 شهر',sal:'$3K-15K',lvl:'صعب'},
+  ml:{name:'🧠 ML Engineer',short:'Machine Learning',page:'ai.html',desc:'بناء نماذج تتعلم من البيانات وتحل المشاكل',dur:'14-20 شهر',sal:'$4K-25K',lvl:'صعب جداً'},
+  nlp:{name:'💬 NLP Engineer',short:'NLP',page:'ai.html',desc:'معالجة اللغات الطبيعية والـ Transformers',dur:'16-22 شهر',sal:'$5K-25K',lvl:'صعب جداً'},
+  cv:{name:'👁️ Computer Vision',short:'CV Engineer',page:'ai.html',desc:'تعليم الآلة رؤية الصور والفيديو',dur:'14-20 شهر',sal:'$4K-22K',lvl:'صعب جداً'},
+  genai:{name:'✨ GenAI / LLM Engineer',short:'GenAI',page:'ai.html',desc:'بناء تطبيقات فوق نماذج اللغة الكبيرة',dur:'10-16 شهر',sal:'$5K-28K',lvl:'صعب'},
+  datascience:{name:'📊 Data Scientist',short:'Data Science',page:'data.html',desc:'تحليل البيانات واستخراج الأنماط القيّمة',dur:'12-18 شهر',sal:'$2.5K-20K',lvl:'صعب'},
+  dataeng:{name:'🔧 Data Engineer',short:'Data Engineering',page:'data.html',desc:'بناء خطوط أنابيب البيانات والـ Warehouses',dur:'14-20 شهر',sal:'$4K-18K',lvl:'صعب'},
+  bi:{name:'📈 BI / Data Analyst',short:'Business Intelligence',page:'data.html',desc:'Power BI وTableau ولوحات القيادة',dur:'8-14 شهر',sal:'$1.5K-10K',lvl:'سهل-متوسط'},
+  pentest:{name:'💀 Penetration Tester',short:'Pentesting',page:'security.html',desc:'Ethical Hacking واكتشاف الثغرات',dur:'14-20 شهر',sal:'$2.5K-25K',lvl:'صعب جداً'},
+  soc:{name:'🛡️ SOC / Blue Team',short:'SOC Analyst',page:'security.html',desc:'مراقبة التهديدات والاستجابة للحوادث',dur:'12-18 شهر',sal:'$2K-15K',lvl:'متوسط-صعب'},
+  appsec:{name:'🔒 AppSec Engineer',short:'App Security',page:'security.html',desc:'أمان التطبيقات وDevSecOps',dur:'12-18 شهر',sal:'$3K-16K',lvl:'صعب'},
+  devops:{name:'🔁 DevOps Engineer',short:'DevOps',page:'devops.html',desc:'CI/CD وDocker وKubernetes والأتمتة',dur:'14-20 شهر',sal:'$3K-18K',lvl:'صعب'},
+  cloud:{name:'☁️ Cloud Architect',short:'Cloud',page:'devops.html',desc:'AWS وAzure وGCP والبنية السحابية',dur:'14-20 شهر',sal:'$5K-22K',lvl:'صعب'},
+  gamedev:{name:'🎮 Game Developer',short:'Game Dev',page:'other.html',desc:'Unity وUnreal وبناء ألعاب احترافية',dur:'12-18 شهر',sal:'$2K-18K',lvl:'صعب'},
+  uiux:{name:'🎭 UI/UX Designer',short:'UI/UX',page:'other.html',desc:'Figma ومنهجية التصميم وتجربة المستخدم',dur:'8-12 شهر',sal:'$1.5K-18K',lvl:'سهل-متوسط'},
+  embedded:{name:'🔌 Embedded / IoT',short:'Embedded',page:'other.html',desc:'C/C++ وFreeRTOS والأجهزة المدمجة',dur:'12-18 شهر',sal:'$2K-18K',lvl:'صعب'},
+  blockchain:{name:'⛓️ Blockchain Dev',short:'Web3',page:'other.html',desc:'Solidity وEthereum والعقود الذكية',dur:'12-16 شهر',sal:'$3K-25K',lvl:'صعب جداً'},
+  qa:{name:'🧪 QA Engineer',short:'QA Testing',page:'other.html',desc:'اختبار البرمجيات يدوياً وآلياً',dur:'8-12 شهر',sal:'$1.5K-13K',lvl:'سهل-متوسط'},
+  dba:{name:'🗄️ Database Admin',short:'DBA',page:'other.html',desc:'إدارة وتحسين قواعد البيانات',dur:'10-16 شهر',sal:'$2K-18K',lvl:'متوسط'},
+};
+
+// Personality analysis
+const TRAITS = {
+  تحليلي:{icon:'🔬',name:'تحليلي',desc:'تفكيك المشاكل المعقدة'},
+  إبداعي:{icon:'🎨',name:'مبدع',desc:'ابتكار حلول جمالية'},
+  استراتيجي:{icon:'🏹',name:'استراتيجي',desc:'رؤية الصورة الكبيرة'},
+  تجريبي:{icon:'⚗️',name:'تجريبي',desc:'التعلم بالتجربة والخطأ'},
+  تطبيقي:{icon:'🛠️',name:'تطبيقي',desc:'بناء حلول ملموسة'},
+  بيانات:{icon:'📊',name:'محلل بيانات',desc:'اكتشاف الأنماط المخفية'},
+  أمني:{icon:'🛡️',name:'أمني',desc:'حماية الأنظمة والبيانات'},
+  مستقبلي:{icon:'🚀',name:'مستشرف',desc:'استكشاف التقنيات الجديدة'},
+  مالي:{icon:'💰',name:'هادف',desc:'الاستقرار المالي'},
+  عملي:{icon:'⚙️',name:'عملي',desc:'التعلم بالتطبيق'},
+  نظري:{icon:'📚',name:'أكاديمي',desc:'فهم الأسس العميقة'},
+  واجهات:{icon:'🖥️',name:'مصمم',desc:'العمل بالواجهات البصرية'},
+  سيرفر:{icon:'🖥️',name:'سيرفر',desc:'العمل في بيئة السيرفر'},
+};
+
+// ==========================================
+// QUIZ STATE
+// ==========================================
+let qIdx = 0;
+let selectedOpt = null;
+let scores = {};
+let personalityTraits = [];
+
+Object.keys(TRACKS).forEach(k => { scores[k] = 0; });
+
+function startQuiz() {
+  document.getElementById('qintro').style.display = 'none';
+  document.getElementById('qmain').style.display = 'block';
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[qIdx];
+  selectedOpt = null;
+
+  // Progress
+  const pct = Math.round((qIdx / QUESTIONS.length) * 100);
+  document.getElementById('progLabel').textContent = `السؤال ${qIdx + 1} من ${QUESTIONS.length}`;
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('progFill').style.width = pct + '%';
+
+  // Question
+  document.getElementById('qcatBadge').textContent = q.cat;
+  document.getElementById('qnum').textContent = `السؤال ${qIdx + 1}`;
+  document.getElementById('qtext').textContent = q.text;
+  document.getElementById('qhint').textContent = 'اختر إجابة للمتابعة';
+  document.getElementById('qnextbtn').classList.remove('ready');
+
+  // Options
+  const letters = ['أ','ب','ج','د'];
+  document.getElementById('qopts').innerHTML = q.opts.map((o,i) => `
+    <div class="qopt" onclick="selectOpt(${i})" id="opt${i}">
+      <div class="onum">${letters[i]}</div>
+      <div class="otxt">
+        <div class="otitle">${o.t}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectOpt(i) {
+  selectedOpt = i;
+  document.querySelectorAll('.qopt').forEach((el,idx) => {
+    el.classList.toggle('sel', idx === i);
+  });
+  document.getElementById('qhint').textContent = 'رائع! اضغط التالي للمتابعة';
+  document.getElementById('qnextbtn').classList.add('ready');
+
+  // Track personality
+  const trait = QUESTIONS[qIdx].opts[i].s;
+  if(trait) personalityTraits.push(trait);
+}
+
+function nextQ() {
+  if (selectedOpt === null) return;
+
+  // Add scores
+  const optScores = QUESTIONS[qIdx].opts[selectedOpt].scores;
+  Object.entries(optScores).forEach(([k,v]) => {
+    if(scores[k] !== undefined) scores[k] += v;
+  });
+
+  qIdx++;
+  if (qIdx < QUESTIONS.length) {
+    // Animate out
+    document.getElementById('qcard').style.animation = 'none';
+    document.getElementById('qopts').style.animation = 'none';
+    setTimeout(() => {
+      document.getElementById('qcard').style.animation = 'fadeUp .4s ease backwards';
+      document.getElementById('qopts').style.animation = 'fadeUp .4s .1s ease backwards';
+      renderQ();
+    }, 50);
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('qmain').style.display = 'none';
+
+  // Sort scores
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const top = sorted[0];
+  const second = sorted[1];
+  const third = sorted[2];
+  const totalScore = sorted.reduce((sum,[,v]) => sum+v, 0);
+
+  const t1 = TRACKS[top[0]];
+  const t2 = TRACKS[second[0]];
+
+  // Determine dominant personality traits
+  const traitCounts = {};
+  personalityTraits.forEach(t => { traitCounts[t] = (traitCounts[t]||0)+1; });
+  const topTraits = Object.entries(traitCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+  // Build score display (top 5)
+  const top5 = sorted.slice(0,5);
+
+  const resultHTML = `
+    <div class="qr-header">
+      <span class="qr-main-icon">${t1.name.split(' ')[0]}</span>
+      <div class="qr-label">نتيجتك الشخصية</div>
+      <h2 class="qr-title">${t1.name}</h2>
+      <p class="qr-desc">${t1.desc} — هذا التخصص يتناسب مع شخصيتك وطريقة تفكيرك بشكل استثنائي</p>
+
+      <div class="qr-traits">
+        ${topTraits.map(([trait]) => {
+          const td = TRAITS[trait] || {icon:'⚡',name:trait,desc:'سمة شخصية'};
+          return `<div class="trait-item"><span class="trait-icon">${td.icon}</span><div class="trait-name">${td.name}</div><div class="trait-val">سمة رئيسية</div></div>`;
+        }).join('')}
+      </div>
+
+      <div class="qr-scores">
+        ${top5.map(([k,v]) => {
+          const tr = TRACKS[k];
+          if(!tr) return '';
+          const pct = totalScore > 0 ? Math.round((v/top[1])*100) : 0;
+          return `<div class="qr-score-item">
+            <div class="qr-score-name">${tr.short}</div>
+            <div class="qr-score-bar"><div class="qr-score-fill" style="width:${pct}%"></div></div>
+            <div class="qr-score-pct">${pct}% توافق</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-bottom:16px">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:6px">🎯 توصياتك المخصصة</h3>
+      <p style="font-size:.82rem;color:var(--t2)">بناءً على إجاباتك، إليك أفضل خيارَين لك</p>
+    </div>
+
+    <div class="qr-recs">
+      <a href="${t1.page}" class="qr-rec top">
+        <span class="qr-rec-badge badge-top">🥇 الأنسب لك</span>
+        <span class="qr-rec-ico">${t1.name.split(' ')[0]}</span>
+        <div class="qr-rec-title">${t1.name}</div>
+        <div class="qr-rec-sub">${t1.desc}</div>
+        <div class="qr-rec-stats">
+          <span class="qr-rec-stat">⏱ ${t1.dur}</span>
+          <span class="qr-rec-stat">💰 ${t1.sal}/شهر</span>
+          <span class="qr-rec-stat">📊 ${t1.lvl}</span>
+        </div>
+      </a>
+      <a href="${t2.page}" class="qr-rec">
+        <span class="qr-rec-badge badge-alt">🥈 بديل رائع</span>
+        <span class="qr-rec-ico">${t2.name.split(' ')[0]}</span>
+        <div class="qr-rec-title">${t2.name}</div>
+        <div class="qr-rec-sub">${t2.desc}</div>
+        <div class="qr-rec-stats">
+          <span class="qr-rec-stat">⏱ ${t2.dur}</span>
+          <span class="qr-rec-stat">💰 ${t2.sal}/شهر</span>
+          <span class="qr-rec-stat">📊 ${t2.lvl}</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="qr-actions">
+      <a href="${t1.page}" class="qrbtn qrbtn-p">🗺️ عرض روادماب ${t1.short}</a>
+      <button class="qrbtn qrbtn-s" onclick="resetQuiz()">🔄 إعادة الاختبار</button>
+      <a href="index.html" class="qrbtn qrbtn-s">🏠 الرئيسية</a>
+    </div>
+  `;
+
+  const el = document.getElementById('qresult');
+  el.innerHTML = resultHTML;
+  el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth'});
+}
+
+function resetQuiz() {
+  qIdx = 0;
+  selectedOpt = null;
+  personalityTraits = [];
+  Object.keys(scores).forEach(k => { scores[k] = 0; });
+  document.getElementById('qresult').classList.remove('show');
+  document.getElementById('qresult').innerHTML = '';
+  document.getElementById('qmain').style.display = 'none';
+  document.getElementById('qintro').style.display = 'flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

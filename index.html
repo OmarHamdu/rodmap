@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodePath — خريطة طريق البرمجة الشاملة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020509;--s1:#07101f;--s2:#0c1a2e;--s3:#111f38;
+  --b1:rgba(255,255,255,0.05);--b2:rgba(255,255,255,0.09);--b3:rgba(255,255,255,0.14);
+  --cyan:#00f5d4;--blue:#38b6ff;--purple:#a259ff;--pink:#ff5fa0;
+  --orange:#ff8c42;--yellow:#ffd166;--green:#3ddc97;--red:#ff4d6d;
+  --t1:#e8f0fe;--t2:#8fa3b8;--t3:#3d5a73;
+  --r:16px;--rl:24px;--rxl:32px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--t1);font-family:'Cairo',sans-serif;cursor:none;overflow-x:hidden}
+
+/* CURSOR */
+#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
+#cur2{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,245,212,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s,top .12s}
+body:hover #cur{opacity:1}
+
+/* BG */
+#bgc{position:fixed;inset:0;z-index:0}
+.bgrid{position:fixed;inset:0;z-index:1;
+  background-image:linear-gradient(rgba(0,245,212,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,212,.018) 1px,transparent 1px);
+  background-size:70px 70px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.orb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;animation:orbf 9s ease-in-out infinite}
+.o1{width:450px;height:450px;background:rgba(0,245,212,.045);top:-120px;right:-80px}
+.o2{width:380px;height:380px;background:rgba(162,89,255,.05);bottom:5%;left:-60px;animation-delay:-4s}
+.o3{width:280px;height:280px;background:rgba(56,182,255,.04);top:55%;left:48%;animation-delay:-7s}
+@keyframes orbf{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-35px) scale(1.07)}}
+
+/* PROGRESS */
+#pgbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));z-index:600;transition:width .1s;box-shadow:0 0 8px var(--cyan)}
+
+/* NAV */
+nav{position:fixed;top:0;inset-inline:0;z-index:500;height:64px;
+  background:rgba(2,5,9,.88);backdrop-filter:blur(22px) saturate(180%);
+  border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nlogo{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:#000;
+  font-family:'Fira Code',monospace;box-shadow:0 0 18px rgba(0,245,212,.3)}
+.nname{font-family:'Fira Code',monospace;font-size:1.05rem;color:var(--cyan);letter-spacing:.5px}
+.npills{display:flex;gap:3px;background:var(--s2);border:1px solid var(--b1);border-radius:50px;padding:4px}
+.npill{padding:6px 15px;border-radius:50px;font-size:.78rem;color:var(--t3);cursor:pointer;transition:all .2s;border:none;background:none;font-family:'Cairo',sans-serif;text-decoration:none;display:inline-flex}
+.npill:hover{color:var(--t1)}
+.npill.act{background:var(--s3);color:var(--cyan);border:1px solid rgba(0,245,212,.2)}
+.nbtn{padding:8px 20px;border-radius:50px;font-size:.8rem;cursor:pointer;font-family:'Cairo',sans-serif;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;font-weight:700;border:none;
+  box-shadow:0 4px 18px rgba(0,245,212,.28);transition:all .25s}
+.nbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,245,212,.4)}
+
+/* HERO */
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 24px 60px;overflow:hidden}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,245,212,.06);border:1px solid rgba(0,245,212,.2);border-radius:50px;padding:7px 20px;font-size:.78rem;color:var(--cyan);margin-bottom:32px;font-family:'Fira Code',monospace;animation:fadeUp .6s ease backwards}
+.hbadge::before{content:'';width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,245,212,.6)}50%{opacity:.5;box-shadow:0 0 0 7px rgba(0,245,212,0)}}
+.hpre{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;animation:fadeUp .6s .08s ease backwards}
+h1.htitle{font-family:'Tajawal',sans-serif;font-size:clamp(2.8rem,8vw,6.5rem);font-weight:900;line-height:1.05;margin-bottom:24px;animation:fadeUp .7s .12s ease backwards}
+.hl1{display:block;color:#fff}
+.hl2{display:block;background:linear-gradient(90deg,var(--cyan),var(--blue) 40%,var(--purple) 75%,var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gmove 4s linear infinite}
+@keyframes gmove{0%{background-position:0%}100%{background-position:200%}}
+.hdesc{font-size:1.1rem;color:var(--t2);max-width:660px;line-height:1.95;margin-bottom:42px;animation:fadeUp .7s .2s ease backwards}
+.hctarow{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;animation:fadeUp .7s .28s ease backwards}
+.cta1{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;border:none;padding:14px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 28px rgba(0,245,212,.3);transition:all .3s}
+.cta1:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(0,245,212,.45)}
+.cta2{background:var(--s2);border:1px solid var(--b2);color:var(--t2);padding:14px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s}
+.cta2:hover{border-color:var(--purple);color:var(--purple)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS ROW */
+.hstats{display:flex;border:1px solid var(--b1);border-radius:var(--rl);background:var(--s1);overflow:hidden;max-width:800px;width:100%;animation:fadeUp .7s .36s ease backwards}
+.hstat{flex:1;padding:22px 16px;text-align:center;position:relative}
+.hstat+.hstat::before{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:var(--b1)}
+.snum{font-family:'Tajawal',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;line-height:1}
+.slbl{font-size:.72rem;color:var(--t3);margin-top:5px}
+
+/* SCROLL IND */
+.sind{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--t3);font-size:.68rem;letter-spacing:2px;text-transform:uppercase;font-family:'Fira Code',monospace;animation:float 2s ease-in-out infinite}
+.swheel{width:20px;height:34px;border:1px solid var(--t3);border-radius:10px;position:relative}
+.swheel::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:7px;background:var(--cyan);border-radius:2px;animation:sdot 2s ease-in-out infinite}
+@keyframes sdot{0%,100%{top:5px;opacity:1}50%{top:18px;opacity:0}}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+
+/* CATEGORY CARDS (MAIN) */
+.main{position:relative;z-index:10;max-width:1500px;margin:0 auto;padding:0 24px 120px}
+.sec{margin-top:70px;margin-bottom:32px;display:flex;align-items:center;gap:14px}
+.secbar{width:3px;height:30px;border-radius:2px;flex-shrink:0}
+.sectitle{font-family:'Tajawal',sans-serif;font-size:1.55rem;font-weight:800}
+.secsub{font-size:.75rem;color:var(--t3);margin-top:3px}
+
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+
+.catcard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;cursor:pointer;text-decoration:none;display:block;color:inherit;transition:transform .35s cubic-bezier(.25,.46,.45,.94),border-color .3s,box-shadow .3s;animation:cardIn .5s ease backwards}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.catcard:hover{transform:translateY(-8px) scale(1.01);border-color:var(--cc);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px var(--cg)}
+.cstripe{height:3px;background:linear-gradient(90deg,var(--cc),transparent)}
+.cchead{padding:24px 22px 16px;display:flex;gap:14px}
+.ccico{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;background:var(--cibg);border:1px solid var(--cib)}
+.cctitle{font-family:'Tajawal',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:4px;color:#fff}
+.ccsub{font-size:.75rem;color:var(--t3);line-height:1.5}
+.ccdesc{padding:0 22px 16px;font-size:.82rem;color:var(--t2);line-height:1.75}
+.ccchips{padding:0 22px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.cchip{font-size:.65rem;padding:3px 10px;border-radius:6px;background:var(--s3);border:1px solid var(--b1);color:var(--t2);font-family:'Fira Code',monospace}
+.ccbot{padding:14px 22px;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.ccmeta{font-size:.72rem;color:var(--t3);display:flex;align-items:center;gap:6px}
+.ccdot{width:4px;height:4px;border-radius:50%;background:var(--cc)}
+.ccgo{font-size:.75rem;color:var(--cc);opacity:0;transform:translateX(8px);transition:all .25s}
+.catcard:hover .ccgo{opacity:1;transform:translateX(0)}
+.dbadge{font-size:.62rem;padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace}
+.dhot{background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);color:var(--red)}
+.dhigh{background:rgba(61,220,151,.1);border:1px solid rgba(61,220,151,.25);color:var(--green)}
+.drising{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.25);color:var(--orange)}
+
+/* QUIZ TEASER */
+.qteaser{background:linear-gradient(135deg,rgba(0,245,212,.04),rgba(162,89,255,.04));border:1px solid rgba(0,245,212,.14);border-radius:var(--rxl);padding:44px;text-align:center;position:relative;overflow:hidden;margin-bottom:0}
+.qteaser::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(0,245,212,.06) 0%,transparent 70%);pointer-events:none}
+.qticon{font-size:3rem;display:block;margin-bottom:16px}
+.qttitle{font-family:'Tajawal',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:10px}
+.qtdesc{font-size:.9rem;color:var(--t2);margin-bottom:28px;max-width:550px;margin-left:auto;margin-right:auto}
+.qtbtn{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;padding:13px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 22px rgba(0,245,212,.28);text-decoration:none;display:inline-block}
+.qtbtn:hover{transform:translateY(-2px);box-shadow:0 7px 30px rgba(0,245,212,.4)}
+
+/* COMPARE TABLE */
+.ctable{width:100%;border-collapse:collapse;min-width:750px}
+.ctable th{background:var(--s2);padding:14px 18px;font-size:.78rem;font-weight:700;color:var(--t2);text-align:right;border-bottom:1px solid var(--b2)}
+.ctable td{padding:13px 18px;font-size:.8rem;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+.ctable tr:hover td{background:var(--s2)}
+.ctname{font-weight:700;color:#fff;font-size:.85rem}
+.ctsec{font-size:.7rem;padding:3px 10px;border-radius:10px;font-family:'Fira Code',monospace}
+.ce{background:rgba(61,220,151,.1);color:var(--green);border:1px solid rgba(61,220,151,.2)}
+.cm{background:rgba(255,209,102,.1);color:var(--yellow);border:1px solid rgba(255,209,102,.2)}
+.ch{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+.ctsal{color:var(--green);font-family:'Fira Code',monospace;font-weight:700;font-size:.76rem}
+.ctdur{color:var(--cyan);font-family:'Fira Code',monospace;font-size:.76rem}
+
+/* RESOURCE CARDS */
+.resgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.rescard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);padding:20px;display:flex;gap:14px;cursor:pointer;transition:all .3s}
+.rescard:hover{transform:translateY(-4px);border-color:var(--b2);box-shadow:0 12px 35px rgba(0,0,0,.4)}
+.resico{font-size:1.9rem;flex-shrink:0}
+.restype{font-size:.62rem;color:var(--cyan);font-family:'Fira Code',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.resname{font-size:.88rem;font-weight:700;margin-bottom:3px}
+.resdesc{font-size:.74rem;color:var(--t2);line-height:1.6}
+
+/* TIMELINE */
+.tlwrap{display:grid;grid-template-columns:1fr 56px 1fr;gap:0}
+.tlr{text-align:left;padding:0 28px 36px 0}
+.tll{padding:0 0 36px 28px}
+.tlce{display:flex;flex-direction:column;align-items:center;padding-bottom:36px}
+.tlline{flex:1;width:2px;background:linear-gradient(to bottom,var(--cyan),var(--purple));opacity:.3}
+.tlnode{width:40px;height:40px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:0 0 18px rgba(0,245,212,.3);flex-shrink:0;z-index:1}
+.tlcard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px 22px;transition:all .3s}
+.tlcard:hover{border-color:var(--b2);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.3)}
+.tlphase{font-size:.65rem;color:var(--cyan);font-family:'Fira Code',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.tltitle{font-family:'Tajawal',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:7px}
+.tldesc{font-size:.8rem;color:var(--t2);line-height:1.8;margin-bottom:10px}
+.tltags{display:flex;flex-wrap:wrap;gap:5px}
+.tltag{font-size:.65rem;background:rgba(0,245,212,.08);border:1px solid rgba(0,245,212,.14);color:var(--cyan);padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace}
+.tlemp{padding-bottom:36px}
+
+/* FOOTER */
+footer{position:relative;z-index:10;border-top:1px solid var(--b1);padding:50px 32px 40px;text-align:center;background:var(--s1)}
+.flogo{font-family:'Fira Code',monospace;font-size:1.2rem;color:var(--cyan);margin-bottom:8px}
+.fdev{font-size:.82rem;color:var(--t2);margin-bottom:4px}
+.fcopy{font-size:.72rem;color:var(--t3);margin-bottom:22px}
+.flinks{display:flex;justify-content:center;gap:22px;flex-wrap:wrap}
+.flink{font-size:.76rem;color:var(--t2);cursor:pointer;transition:color .2s;text-decoration:none}
+.flink:hover{color:var(--cyan)}
+
+/* BTT */
+.btt{position:fixed;bottom:26px;left:26px;width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 18px rgba(0,245,212,.4);transition:all .3s;opacity:0;pointer-events:none}
+.btt.vis{opacity:1;pointer-events:all}
+.btt:hover{transform:translateY(-3px)}
+
+@media(max-width:900px){
+  .npills{display:none}
+  .catgrid{grid-template-columns:1fr}
+  .tlwrap{grid-template-columns:40px 1fr}
+  .tlr{display:none}
+  .tll{grid-column:2}
+  .tlemp{display:none}
+  body{cursor:auto}
+  #cur,#cur2{display:none}
+  .hstats{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur2"></div>
+<canvas id="bgc" style="position:fixed;inset:0;z-index:0;width:100%;height:100%"></canvas>
+<div class="bgrid"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div id="pgbar"></div>
+
+<nav>
+  <a href="index.html" class="nbrand">
+    <div class="nlogo">&lt;/&gt;</div>
+    <span class="nname">CodePath</span>
+  </a>
+  <div class="npills">
+    <a href="quiz.html" class="npill">🧭 اختبار التخصص</a>
+    <a href="web.html" class="npill">🌐 الويب</a>
+    <a href="mobile.html" class="npill">📱 الموبايل</a>
+    <a href="ai.html" class="npill">🤖 الذكاء الاصطناعي</a>
+    <a href="data.html" class="npill">📊 البيانات</a>
+    <a href="security.html" class="npill">🔐 الأمن</a>
+    <a href="devops.html" class="npill">☁️ DevOps</a>
+    <a href="other.html" class="npill">🎯 أخرى</a>
+  </div>
+  <button class="nbtn" onclick="window.location='quiz.html'">اكتشف مسارك</button>
+</nav>
+
+<section class="hero">
+  <div class="hbadge">v2025 · تم التطوير بواسطة Eng. Omar Hamdi</div>
+  <p class="hpre">// من الصفر حتى الاحتراف</p>
+  <h1 class="htitle">
+    <span class="hl1">اختر مسارك</span>
+    <span class="hl2">وابنِ مستقبلك</span>
+  </h1>
+  <p class="hdesc">الدليل الأشمل لتعلم البرمجة والتكنولوجيا — روادماب تفصيلية لكل تخصص مع المهارات والمشاريع والشهادات وفرص العمل. طُوِّر بعناية واهتمام من قِبَل Eng. Omar Hamdi.</p>
+  <div class="hctarow">
+    <button class="cta1" onclick="window.location='quiz.html'">🧭 اكتشف تخصصك المثالي</button>
+    <button class="cta2" onclick="document.getElementById('cats').scrollIntoView({behavior:'smooth'})">استعرض التخصصات</button>
+  </div>
+  <div class="hstats">
+    <div class="hstat"><span class="snum" data-target="25">0</span><div class="slbl">تخصص برمجي</div></div>
+    <div class="hstat"><span class="snum" data-target="250" data-suffix="+">0</span><div class="slbl">موضوع تقني</div></div>
+    <div class="hstat"><span class="snum" data-target="120" data-suffix="+">0</span><div class="slbl">مصدر تعليمي</div></div>
+    <div class="hstat"><span class="snum" data-target="90" data-suffix="+">0</span><div class="slbl">مشروع عملي</div></div>
+    <div class="hstat"><span class="snum" data-target="60" data-suffix="+">0</span><div class="slbl">شهادة مهنية</div></div>
+  </div>
+  <div class="sind"><div class="swheel"></div><span>scroll</span></div>
+</section>
+
+<!-- QUIZ TEASER -->
+<div class="main" style="padding-bottom:0">
+  <div class="qteaser" id="quiz-teaser">
+    <span class="qticon">🧭</span>
+    <h2 class="qttitle">لا تعرف من أين تبدأ؟</h2>
+    <p class="qtdesc">أجب على 10 أسئلة شاملة وسيُحدد لك النظام التخصص الأنسب بناءً على شخصيتك واهتماماتك وأهدافك الوظيفية</p>
+    <a href="quiz.html" class="qtbtn">ابدأ اختبار التخصص ←</a>
+  </div>
+</div>
+
+<div class="main" id="cats">
+
+  <!-- WEB -->
+  <div class="sec">
+    <div class="secbar" style="background:linear-gradient(to bottom,#38b6ff,#a259ff)"></div>
+    <div><div class="sectitle">🌐 تطوير الويب</div><div class="secsub">Frontend · Backend · Full Stack · APIs</div></div>
+  </div>
+  <div class="catgrid">
+    <a href="web.html" class="catcard" style="--cc:#38b6ff;--cg:rgba(56,182,255,.14);--cibg:rgba(56,182,255,.08);--cib:rgba(56,182,255,.2)" data-delay="0">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">🌐</div><div><div class="cctitle">تطوير الويب</div><div class="ccsub">Frontend · Backend · Full Stack</div></div></div>
+      <div class="ccdesc">من HTML بسيط حتى تطبيقات SaaS ضخمة — اكتشف 3 تخصصات متكاملة مع روادماب تفصيلية لكل منها</div>
+      <div class="ccchips"><span class="cchip">HTML5</span><span class="cchip">CSS3</span><span class="cchip">JavaScript</span><span class="cchip">React</span><span class="cchip">Node.js</span><span class="cchip">PostgreSQL</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 الأكثر طلباً</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="mobile.html" class="catcard" style="--cc:#ff8c42;--cg:rgba(255,140,66,.14);--cibg:rgba(255,140,66,.08);--cib:rgba(255,140,66,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">📱</div><div><div class="cctitle">تطوير الجوال</div><div class="ccsub">React Native · Flutter · iOS · Android</div></div></div>
+      <div class="ccdesc">تطبيقات الهاتف — من cross-platform إلى Native لكل منصة، مع مشاريع حقيقية وخطوات نشر واضحة</div>
+      <div class="ccchips"><span class="cchip">React Native</span><span class="cchip">Flutter</span><span class="cchip">Swift</span><span class="cchip">Kotlin</span><span class="cchip">Expo</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhigh">✅ طلب جيد</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="ai.html" class="catcard" style="--cc:#a259ff;--cg:rgba(162,89,255,.14);--cibg:rgba(162,89,255,.08);--cib:rgba(162,89,255,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">🤖</div><div><div class="cctitle">الذكاء الاصطناعي</div><div class="ccsub">ML · Deep Learning · NLP · Computer Vision · GenAI</div></div></div>
+      <div class="ccdesc">مستقبل التكنولوجيا — 4 تخصصات متخصصة في AI وML مع روادماب رياضية وعملية شاملة</div>
+      <div class="ccchips"><span class="cchip">Python</span><span class="cchip">PyTorch</span><span class="cchip">TensorFlow</span><span class="cchip">HuggingFace</span><span class="cchip">LangChain</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>4 تخصصات <span class="dbadge dhot">🔥 الأسرع نمواً</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="data.html" class="catcard" style="--cc:#3ddc97;--cg:rgba(61,220,151,.14);--cibg:rgba(61,220,151,.08);--cib:rgba(61,220,151,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">📊</div><div><div class="cctitle">علم البيانات</div><div class="ccsub">Data Science · Engineering · BI · Analytics</div></div></div>
+      <div class="ccdesc">تحليل البيانات وبناء خطوط الأنابيب ولوحات القيادة — ثلاثة مسارات متكاملة في عالم البيانات</div>
+      <div class="ccchips"><span class="cchip">Python</span><span class="cchip">SQL</span><span class="cchip">Spark</span><span class="cchip">Power BI</span><span class="cchip">Tableau</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 رواتب عالية</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="security.html" class="catcard" style="--cc:#ff4d6d;--cg:rgba(255,77,109,.14);--cibg:rgba(255,77,109,.08);--cib:rgba(255,77,109,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">🔐</div><div><div class="cctitle">الأمن السيبراني</div><div class="ccsub">Pentesting · SOC · AppSec · Forensics</div></div></div>
+      <div class="ccdesc">حماية الأنظمة والشبكات — من Ethical Hacking إلى SOC Analysis مع مسارات تفصيلية للشهادات</div>
+      <div class="ccchips"><span class="cchip">Kali Linux</span><span class="cchip">Metasploit</span><span class="cchip">Burp Suite</span><span class="cchip">Splunk</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>3 تخصصات <span class="dbadge dhot">🔥 رواتب ضخمة</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="devops.html" class="catcard" style="--cc:#38b6ff;--cg:rgba(56,182,255,.14);--cibg:rgba(56,182,255,.08);--cib:rgba(56,182,255,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">☁️</div><div><div class="cctitle">DevOps والسحابة</div><div class="ccsub">DevOps · Cloud · SRE · Platform Engineering</div></div></div>
+      <div class="ccdesc">أتمتة النشر وإدارة البنية التحتية السحابية — AWS وAzure وGCP مع Kubernetes وTerraform</div>
+      <div class="ccchips"><span class="cchip">Docker</span><span class="cchip">Kubernetes</span><span class="cchip">Terraform</span><span class="cchip">AWS</span><span class="cchip">CI/CD</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>2 تخصص <span class="dbadge dhot">🔥 أعلى رواتب</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+    <a href="other.html" class="catcard" style="--cc:#ff5fa0;--cg:rgba(255,95,160,.14);--cibg:rgba(255,95,160,.08);--cib:rgba(255,95,160,.2)">
+      <div class="cstripe"></div>
+      <div class="cchead"><div class="ccico">🎯</div><div><div class="cctitle">تخصصات متنوعة</div><div class="ccsub">Games · Blockchain · Embedded · UI/UX · QA · DBA</div></div></div>
+      <div class="ccdesc">ألعاب الفيديو، Blockchain، إنترنت الأشياء، تصميم UX، ضمان الجودة، وإدارة قواعد البيانات</div>
+      <div class="ccchips"><span class="cchip">Unity</span><span class="cchip">Solidity</span><span class="cchip">Figma</span><span class="cchip">C/C++</span><span class="cchip">Cypress</span></div>
+      <div class="ccbot"><div class="ccmeta"><div class="ccdot"></div>6 تخصصات <span class="dbadge drising">📈 متنوعة</span></div><span class="ccgo">استعرض الصفحة ←</span></div>
+    </a>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="sec" style="margin-top:80px" id="compare">
+    <div class="secbar" style="background:linear-gradient(to bottom,var(--cyan),var(--purple))"></div>
+    <div><div class="sectitle">⚖️ مقارنة شاملة للتخصصات</div><div class="secsub">الرواتب · الصعوبة · المدة · الطلب</div></div>
+  </div>
+  <div style="overflow-x:auto;border-radius:var(--rl);border:1px solid var(--b1)">
+    <table class="ctable">
+      <thead><tr><th>التخصص</th><th>الصعوبة</th><th>مدة التعلم</th><th>الراتب/شهر</th><th>الطلب</th><th>المستقبل</th></tr></thead>
+      <tbody id="ctbody"></tbody>
+    </table>
+  </div>
+
+  <!-- MASTER TIMELINE -->
+  <div class="sec" style="margin-top:80px" id="timeline">
+    <div class="secbar" style="background:linear-gradient(to bottom,var(--cyan),transparent)"></div>
+    <div><div class="sectitle">🗺️ المسار العام من الصفر للاحتراف</div><div class="secsub">خريطة طريقك من اليوم الأول حتى أول وظيفة</div></div>
+  </div>
+  <div class="tlwrap" id="tlwrap"></div>
+
+  <!-- RESOURCES -->
+  <div class="sec" style="margin-top:80px" id="resources">
+    <div class="secbar" style="background:linear-gradient(to bottom,var(--yellow),var(--orange))"></div>
+    <div><div class="sectitle">📚 أفضل المصادر التعليمية</div><div class="secsub">مجانية ومدفوعة · عربية وإنجليزية</div></div>
+  </div>
+  <div class="resgrid" id="resgrid"></div>
+
+</div>
+
+<footer>
+  <div class="flogo">&lt;/CodePath&gt;</div>
+  <div class="fdev">🛠️ تم التطوير بواسطة Eng. Omar Hamdi</div>
+  <div class="fcopy">© 2025 CodePath — جميع الحقوق محفوظة</div>
+  <div class="flinks">
+    <a href="index.html" class="flink">الرئيسية</a>
+    <a href="quiz.html" class="flink">اختبار التخصص</a>
+    <a href="web.html" class="flink">الويب</a>
+    <a href="mobile.html" class="flink">الموبايل</a>
+    <a href="ai.html" class="flink">AI</a>
+    <a href="data.html" class="flink">البيانات</a>
+    <a href="security.html" class="flink">الأمن</a>
+    <a href="devops.html" class="flink">DevOps</a>
+    <a href="other.html" class="flink">أخرى</a>
+  </div>
+</footer>
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// PARTICLES
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=[];for(let i=0;i<100;i++){pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,s:Math.random()*1.4+.3,a:Math.random()*.35+.08,c:['#00f5d4','#38b6ff','#a259ff','#ff5fa0'][Math.floor(Math.random()*4)]})}
+function ani(){cv.clearRect(0,0,cv.width,cv.height);pts.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;for(let j=i+1;j<pts.length;j++){const d=Math.hypot(p.x-pts[j].x,p.y-pts[j].y);if(d<110){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,245,212,${.035*(1-d/110)})`;cx.lineWidth=.5;cx.stroke()}}cx.beginPath();cx.arc(p.x,p.y,p.s,0,Math.PI*2);cx.fillStyle=p.c;cx.globalAlpha=p.a;cx.fill();cx.globalAlpha=1});requestAnimationFrame(ani)}ani();
+
+// CURSOR
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';setTimeout(()=>{cur2.style.left=mx+'px';cur2.style.top=my+'px'},80)});
+
+// PROGRESS BAR
+window.addEventListener('scroll',()=>{const p=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;document.getElementById('pgbar').style.width=p+'%';document.getElementById('btt').classList.toggle('vis',window.scrollY>400)});
+
+// COUNTERS
+const obs=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-target]').forEach(el=>{const t=+el.dataset.target,s=el.dataset.suffix||'';let c=0;const st=setInterval(()=>{c=Math.min(c+Math.ceil(t/50),t);el.textContent=c+s;if(c>=t)clearInterval(st)},20)});obs.disconnect()}})},{threshold:.3});
+const hs=document.querySelector('.hstats');if(hs)obs.observe(hs);
+
+// COMPARE TABLE
+const crows=[
+  {n:'🎨 Frontend Dev',d:'متوسط',dur:'8-14 شهر',sal:'$1.5K–12K',dem:'🔥 عالي',tr:'📈',dc:'cm'},
+  {n:'⚙️ Backend Dev',d:'متوسط',dur:'10-16 شهر',sal:'$2K–14K',dem:'🔥 عالي',tr:'📈',dc:'cm'},
+  {n:'🔥 Full Stack',d:'صعب',dur:'14-20 شهر',sal:'$2.5K–18K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
+  {n:'📱 React Native',d:'متوسط',dur:'8-12 شهر',sal:'$2K–13K',dem:'✅ جيد',tr:'📈',dc:'cm'},
+  {n:'🦋 Flutter',d:'متوسط',dur:'8-13 شهر',sal:'$2K–12K',dem:'📈 متصاعد',tr:'🚀',dc:'cm'},
+  {n:'🍎 Native iOS/Android',d:'صعب',dur:'12-18 شهر',sal:'$3K–15K',dem:'✅ جيد',tr:'📈',dc:'ch'},
+  {n:'🧠 ML Engineer',d:'صعب جداً',dur:'14-20 شهر',sal:'$4K–25K',dem:'🔥 الأعلى',tr:'🚀',dc:'ch'},
+  {n:'💬 NLP Engineer',d:'صعب جداً',dur:'16-22 شهر',sal:'$5K–25K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
+  {n:'👁️ Computer Vision',d:'صعب',dur:'14-20 شهر',sal:'$4K–22K',dem:'✅ جيد',tr:'🚀',dc:'ch'},
+  {n:'✨ GenAI Engineer',d:'صعب',dur:'10-16 شهر',sal:'$5K–28K',dem:'🔥 الأسرع',tr:'🚀',dc:'ch'},
+  {n:'📊 Data Scientist',d:'صعب',dur:'12-18 شهر',sal:'$2.5K–20K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
+  {n:'🔧 Data Engineer',d:'صعب',dur:'14-20 شهر',sal:'$4K–18K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
+  {n:'📈 BI Analyst',d:'سهل',dur:'8-14 شهر',sal:'$1.5K–10K',dem:'✅ جيد',tr:'📈',dc:'ce'},
+  {n:'💀 Pentest',d:'صعب جداً',dur:'14-20 شهر',sal:'$2.5K–25K',dem:'🔥 عالي',tr:'📈',dc:'ch'},
+  {n:'🛡️ SOC Analyst',d:'متوسط',dur:'12-18 شهر',sal:'$2K–15K',dem:'✅ جيد',tr:'📈',dc:'cm'},
+  {n:'🔒 AppSec Engineer',d:'صعب',dur:'12-18 شهر',sal:'$3K–16K',dem:'📈 متصاعد',tr:'📈',dc:'ch'},
+  {n:'🔁 DevOps Engineer',d:'صعب',dur:'14-20 شهر',sal:'$3K–18K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
+  {n:'☁️ Cloud Architect',d:'صعب',dur:'14-20 شهر',sal:'$5K–22K',dem:'🔥 عالي',tr:'🚀',dc:'ch'},
+  {n:'🎮 Game Developer',d:'صعب',dur:'12-18 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'ch'},
+  {n:'⛓️ Blockchain Dev',d:'صعب جداً',dur:'12-16 شهر',sal:'$3K–25K',dem:'📈 دوري',tr:'🔄',dc:'ch'},
+  {n:'🔌 Embedded / IoT',d:'صعب',dur:'12-18 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'ch'},
+  {n:'🎭 UI/UX Designer',d:'سهل',dur:'8-12 شهر',sal:'$1.5K–18K',dem:'🔥 عالي',tr:'📈',dc:'ce'},
+  {n:'🧪 QA Engineer',d:'سهل',dur:'8-12 شهر',sal:'$1.5K–13K',dem:'✅ جيد',tr:'📈',dc:'ce'},
+  {n:'🗄️ DBA',d:'متوسط',dur:'10-16 شهر',sal:'$2K–18K',dem:'✅ جيد',tr:'📈',dc:'cm'},
+];
+const tb=document.getElementById('ctbody');
+crows.forEach(r=>{tb.innerHTML+=`<tr><td class="ctname">${r.n}</td><td><span class="ctsec ${r.dc}">${r.d}</span></td><td class="ctdur">${r.dur}</td><td class="ctsal">${r.sal}</td><td>${r.dem}</td><td style="font-size:1.1rem">${r.tr}</td></tr>`});
+
+// TIMELINE
+const tld=[
+  {s:'r',ico:'🌟',ph:'قبل البداية',ti:'التهيئة الذهنية والبيئة',de:'ثبّت VS Code وNodejs وGit. تعلم التعامل مع Terminal، افهم كيف يعمل الإنترنت، وتعلم كيف تبحث وتتعلم بنفسك — هذا يستغرق أسبوعاً أو اثنين.',tg:['VS Code','Git أساسي','Terminal','Google بكفاءة']},
+  {s:'l',ico:'💻',ph:'المرحلة 1 · 1-3 شهور',ti:'لغة البرمجة الأولى',de:'اختر Python للـ AI والبيانات أو JavaScript للويب. ركز على المنطق: المتغيرات، الشروط، الحلقات، الدوال. حل 50-100 مسألة بسيطة.',tg:['Python أو JavaScript','OOP','Problem Solving','Algorithms أساسي']},
+  {s:'r',ico:'🔧',ph:'المرحلة 2 · الشهر 2-3',ti:'أدوات المطور الأساسية',de:'Git وGitHub — كل مطور في العالم يستخدمهما. تعلم commit, branch, merge, PR. افتح حساب GitHub وابدأ بناء ملفك المهني من اليوم الأول.',tg:['Git & GitHub','CLI','SSH','README كتابة']},
+  {s:'l',ico:'🎯',ph:'المرحلة 3 · الشهر 3-8',ti:'اختر تخصصك والتزم به',de:'راجع صفحات الموقع واختر تخصصاً واحداً. التزم 5-6 أشهر متواصلة. القفز بين التخصصات يضيع الوقت ويشتت التركيز.',tg:['تخصص واحد','التزام 6 أشهر','مشروع أسبوعي','مراجعة يومية']},
+  {s:'r',ico:'🏗️',ph:'المرحلة 4 · الشهر 6-14',ti:'ابنِ مشاريع حقيقية',de:'المهارة تأتي من البناء لا المشاهدة. ابنِ 4-6 مشاريع من اهتمامك الشخصي، انشرها على الإنترنت، واجعل الكود مفتوحاً على GitHub.',tg:['5 مشاريع حقيقية','Deploy Live','Code Review','GitHub Public']},
+  {s:'l',ico:'🌐',ph:'المرحلة 5 · الشهر 12-18',ti:'الحضور المهني والشبكة',de:'LinkedIn محدّث، GitHub نشط، اكتب مقالات تقنية، شارك في مجتمعات المطورين. الفرص تأتي من الناس لا من التطبيقات وحدها.',tg:['LinkedIn','GitHub Portfolio','كتابة تقنية','Community']},
+  {s:'r',ico:'🚀',ph:'المرحلة 6 · +14 شهر',ti:'دخول سوق العمل',de:'CV احترافي، تدرب على المقابلات التقنية، راجع DSA الأساسية. قدّم على 20-30 وظيفة. للفريلانس: Upwork وMostaql. الرفض طبيعي — استمر دائماً.',tg:['Technical Interview','DSA أساسي','System Design','Freelancing']}
+];
+const tw=document.getElementById('tlwrap');
+tld.forEach(it=>{
+  if(it.s==='r'){tw.innerHTML+=`<div class="tlr"><div class="tlcard"><div class="tlphase">${it.ph}</div><div class="tltitle">${it.ti}</div><div class="tldesc">${it.de}</div><div class="tltags">${it.tg.map(t=>`<span class="tltag">${t}</span>`).join('')}</div></div></div><div class="tlce"><div class="tlline"></div><div class="tlnode">${it.ico}</div><div class="tlline"></div></div><div class="tlemp"></div>`}
+  else{tw.innerHTML+=`<div class="tlemp"></div><div class="tlce"><div class="tlline"></div><div class="tlnode">${it.ico}</div><div class="tlline"></div></div><div class="tll"><div class="tlcard"><div class="tlphase">${it.ph}</div><div class="tltitle">${it.ti}</div><div class="tldesc">${it.de}</div><div class="tltags">${it.tg.map(t=>`<span class="tltag">${t}</span>`).join('')}</div></div></div>`}
+});
+
+// RESOURCES
+const ress=[
+  {i:'🟡',t:'مجاني كامل',n:'freeCodeCamp',d:'أشمل منصة تعليمية مجانية للويب وأكثر'},
+  {i:'🔵',t:'تفاعلي',n:'The Odin Project',d:'مسار Full Stack تفاعلي مفتوح المصدر'},
+  {i:'🟢',t:'عربي',n:'Elzero Web School',d:'أفضل قناة عربية لتطوير الويب'},
+  {i:'🔴',t:'عربي',n:'حسوب Academy',d:'أدلة وشروحات عربية شاملة'},
+  {i:'🟣',t:'خرائط',n:'roadmap.sh',d:'خرائط تفاعلية لكل مسار ممكن'},
+  {i:'⚫',t:'تدريب',n:'LeetCode',d:'تحديات الخوارزميات للمقابلات'},
+  {i:'🎥',t:'يوتيوب',n:'Traversy Media',d:'كورسات ويب بالإنجليزية'},
+  {i:'📗',t:'توثيق',n:'MDN Web Docs',d:'المرجع الرسمي لتقنيات الويب'},
+  {i:'🎮',t:'أمن',n:'TryHackMe',d:'تعلم الأمن السيبراني تفاعلياً'},
+  {i:'🏅',t:'مسابقات',n:'Kaggle',d:'أفضل مكان لتعلم Data Science'},
+  {i:'📺',t:'يوتيوب',n:'StatQuest',d:'إحصاء وML بأبسط طريقة'},
+  {i:'🎓',t:'مجاني',n:'fast.ai',d:'Deep Learning عملياً ومجاناً'},
+  {i:'☁️',t:'DevOps',n:'TechWorld with Nana',d:'DevOps من الصفر'},
+  {i:'🔥',t:'Full Stack',n:'Full Stack Open',d:'مسار MERN من جامعة هلسنكي'},
+  {i:'🤗',t:'AI',n:'HuggingFace Course',d:'NLP وGenAI مجاناً'},
+  {i:'🛡️',t:'أمن ويب',n:'PortSwigger Academy',d:'أمن الويب مجاناً بالكامل'},
+];
+const rg=document.getElementById('resgrid');
+ress.forEach(r=>{rg.innerHTML+=`<div class="rescard"><span class="resico">${r.i}</span><div><div class="restype">${r.t}</div><div class="resname">${r.n}</div><div class="resdesc">${r.d}</div></div></div>`});
+
+// CARD ANIMATIONS
+document.querySelectorAll('.catcard').forEach((c,i)=>{c.style.animationDelay=(i*.07)+'s'});
+</script>
+</body>
+</html>
